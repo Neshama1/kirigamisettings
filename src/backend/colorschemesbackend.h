@@ -23,9 +23,12 @@
 class ColorSchemesBackend : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(int selectedScheme READ selectedScheme WRITE setSelectedScheme NOTIFY selectedSchemeChanged)
     Q_PROPERTY(QVariantList colorSchemes READ colorSchemes WRITE setColorSchemes NOTIFY colorSchemesChanged)
     Q_PROPERTY(int filesCount READ filesCount WRITE setFilesCount NOTIFY filesCountChanged)
-    Q_PROPERTY(QString selectedScheme READ selectedScheme WRITE setSelectedScheme NOTIFY selectedSchemeChanged)
+
+public:
+    Q_INVOKABLE void getThemes();
 
 public:
     ColorSchemesBackend();
@@ -36,7 +39,7 @@ public:
      */
     QVariantList colorSchemes() const;
     int filesCount() const;
-    QString selectedScheme() const;
+    int selectedScheme() const;
 
 public Q_SLOTS:
     /**
@@ -46,17 +49,17 @@ public Q_SLOTS:
      */
     void setColorSchemes(QVariantList colorSchemes);
     void setFilesCount(int filesCount);
-    void setSelectedScheme(const QString& selectedScheme);
+    void setSelectedScheme(int selectedSchemeIndex);
 
 Q_SIGNALS:
     void colorSchemesChanged(QVariantList colorSchemes);
     void filesCountChanged(int filesCount);
-    void selectedSchemeChanged(const QString& selectedScheme);
+    void selectedSchemeChanged(int selectedSchemeIndex);
 
 private:
     QVariantList m_colorSchemes;
     int m_filesCount;
-    QString m_selectedScheme;
+    int m_selectedSchemeIndex;
 
     QStringList GetColorSchemesFileList(QString path) const;
 };

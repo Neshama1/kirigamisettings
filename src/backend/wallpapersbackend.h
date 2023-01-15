@@ -26,9 +26,12 @@
 class WallpapersBackend : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QString selectedWallpaper READ selectedWallpaper WRITE setSelectedWallpaper NOTIFY selectedWallpaperChanged)
+    Q_PROPERTY(int selectedWallpaper READ selectedWallpaper WRITE setSelectedWallpaper NOTIFY selectedWallpaperChanged)
     Q_PROPERTY(int filesCount READ filesCount WRITE setFilesCount NOTIFY filesCountChanged)
     Q_PROPERTY(QVariantList wallpapers READ wallpapers WRITE setWallpapers NOTIFY wallpapersChanged)
+
+public:
+    Q_INVOKABLE void getThemes();
 
 public:
     /**
@@ -44,7 +47,7 @@ public:
     /**
      * @return the selectedWallpaper
      */
-    QString selectedWallpaper() const;
+    int selectedWallpaper() const;
 
     /**
      * @return the filesCount
@@ -62,7 +65,7 @@ public Q_SLOTS:
      *
      * @param selectedWallpaper the new selectedWallpaper
      */
-    void setSelectedWallpaper(const QString& selectedWallpaper);
+    void setSelectedWallpaper(int selectedWallpaperIndex);
 
     /**
      * Sets the filesCount.
@@ -79,14 +82,14 @@ public Q_SLOTS:
     void setWallpapers(QVariantList wallpapers);
 
 Q_SIGNALS:
-    void selectedWallpaperChanged(const QString& selectedWallpaper);
+    void selectedWallpaperChanged(int selectedWallpaperIndex);
 
     void filesCountChanged(int filesCount);
 
     void wallpapersChanged(QVariantList wallpapers);
 
 private:
-    QString m_selectedWallpaper;
+    int m_selectedWallpaperIndex;
     int m_filesCount;
     QVariantList m_wallpapers;
 };

@@ -9,10 +9,12 @@ import org.kde.KirigamiSettings 1.0
 import QtQml 2.15
 import QtGraphicalEffects 1.15
 
-Kirigami.ScrollablePage {
+Kirigami.Page {
     id: plasmaStylesPage
 
     title: "Plasma Style"
+
+    // Page background color
 
     background: Rectangle {
         Kirigami.Theme.colorSet: Kirigami.Theme.Window
@@ -26,17 +28,24 @@ Kirigami.ScrollablePage {
     }
 
     function getPlasmaStyles() {
+        PlasmaStyleBackend.getThemes()
         var fcount = PlasmaStyleBackend.stylesCount
         for (var i = 0 ; i < fcount ; i++) {
             plasmaStyleModel.append({"name": PlasmaStyleBackend.plasmaStyles[i].name,"folder": PlasmaStyleBackend.plasmaStyles[i].folder,"path": PlasmaStyleBackend.plasmaStyles[i].path,"selected": PlasmaStyleBackend.plasmaStyles[i].selected})
         }
     }
 
+    ListModel {
+        id: plasmaStyleModel
+    }
+
+    // Floating button to add scheme and animation
+
     footer: FloatingActionButton {
         id: floatingButton
         iconName: "list-add"
         onClicked: {
-            infoSheet.open()
+            // infoSheet.open()
         }
     }
 
@@ -49,38 +58,58 @@ Kirigami.ScrollablePage {
         duration: 800
     }
 
+    // Add scheme overlay sheet
+
     Kirigami.OverlaySheet {
         id: infoSheet
 
+        background: Kirigami.ShadowedRectangle {
+            width: 500
+            height: 500
+            Kirigami.Theme.colorSet: Kirigami.Theme.Window
+            Kirigami.Theme.inherit: false
+            color: Kirigami.Theme.backgroundColor
+            radius: 3
+            shadow.size: 8
+        }
+
         header: Kirigami.Heading {
-            text: i18nc("@title:window", "Help")
+            text: i18nc("@title:window", "Scheme")
         }
 
         Kirigami.FormLayout {
             Controls.Label {
-                text: "Texto informativo"
+                text: "Overlay sheet"
             }
         }
     }
 
-    ListModel {
-        id: plasmaStyleModel
-    }
+    // Plasma style cards
 
-    Kirigami.CardsListView {
-        id: cardList
+    Kirigami.CardsGridView {
+        id: cardsGridView
+
         anchors.fill: parent
-        Layout.fillHeight: true
 
+        minimumColumnWidth: 50
+        maximumColumnWidth: 180
+        cellHeight: 156
         model: plasmaStyleModel
+
+        // Card
 
         delegate: Kirigami.Card {
             id: card
+
+            height: 140
+            property bool cardHovered: false
 
             Component.onCompleted: {
                 xAnimation.start()
                 opacityAnimation.start()
             }
+
+            // Card animations
 
             PropertyAnimation {
                 id: xAnimation
@@ -90,7 +119,6 @@ Kirigami.ScrollablePage {
                 to: 0
                 duration: 400
             }
-
             PropertyAnimation {
                 id: opacityAnimation
                 target: card
@@ -99,31 +127,135 @@ Kirigami.ScrollablePage {
                 to: 1
                 duration: 800
             }
+            PropertyAnimation {
+                id: hoverTextAnimation
+                target: hoverRect
+                properties: "opacity"
+                from: 0
+                to: 1
+                duration: 1000
+            }
 
-            actions: [
-                Kirigami.Action {
-                    text: qsTr("Remove style")
-                    icon.name: "edit-delete-remove"
-                    visible: path == "/usr/share/plasma/desktoptheme" ? false : true
-                }
-            ]
+            // 1: Card view when the control is not being hovered
+
+            // Card banner
+
             banner {
+                id: cardBanner
                 iconSource: "color-fill"
                 opacity: 0.9
                 title: name
+                visible: cardHovered ? false : true
             }
+
+            // Selection message
+
             contentItem: Kirigami.InlineMessage {
                 id: inlineMessage
-                text: "Plasma theme selected"
-                visible: selected ? true : false
+                text: "Theme selected"
+                visible: cardHovered ? false : (selected ? true : false)
             }
-            onClicked: {
-                var fcount = PlasmaStyleBackend.stylesCount
-                for (var i = 0 ; i < fcount ; i++) {
-                    plasmaStyleModel.setProperty(i, "selected", false)
+
+            // 2: Card view when the control is being hovered
+
+            Rectangle {
+                id: hoverRect
+                opacity: 0
+                anchors.fill: parent
+                anchors.margins: 2
+                visible: cardHovered ? true : false
+                Kirigami.Theme.colorSet: Kirigami.Theme.View
+                Kirigami.Theme.inherit: false
+                color: Kirigami.Theme.backgroundColor
+
+                // Full plasma theme name
+
+                Controls.Label {
+                    id: hoverText
+                    anchors.fill: parent
+                    anchors.margins: 25
+                    text: name
+                    fontSizeMode: Text.WrapAnywhere
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    wrapMode: Text.Wrap
+                    minimumPixelSize: 10
+                    font.pixelSize: 38
                 }
-                selected = true
-                PlasmaStyleBackend.setSelectedStyle(folder)
+
+                // Remove icon rectangle (circle)
+
+                Rectangle {
+                    id: removeIconRect
+                    implicitWidth: Kirigami.Units.iconSizes.small
+                    implicitHeight: Kirigami.Units.iconSizes.small
+                    anchors.bottom: hoverRect.bottom
+                    anchors.right: hoverRect.right
+                    anchors.margins: 4
+                    scale: 1.2
+                    radius: width
+                    Kirigami.Theme.colorSet: Kirigami.Theme.View
+                    Kirigami.Theme.inherit: false
+                    color: Kirigami.Theme.disabledTextColor
+                    opacity: 0.1
+                    visible: paperUrl.includes("/usr/share/wallpapers") ? false : true
+                }
+
+                // Remove Icon
+
+                Kirigami.Icon {
+                    id: removeIcon
+                    anchors.centerIn: removeIconRect
+                    x: card.width - 5
+                    y: hoverRect.height - implicitHeight - 5
+                    implicitWidth: Kirigami.Units.iconSizes.small
+                    implicitHeight: Kirigami.Units.iconSizes.small
+                    Kirigami.Theme.colorSet: Kirigami.Theme.View
+                    Kirigami.Theme.inherit: false
+                    color: Kirigami.Theme.textColor
+                    opacity: 0.7
+                    visible: paperUrl.includes("/usr/share/wallpapers") ? false : true
+                    source: "bqm-remove"
+
+                    // Action when remove was cliked
+
+                    MouseArea {
+                        anchors.fill: removeIcon
+                        hoverEnabled: true
+                        onClicked: {
+                            // infoSheet.open()
+                        }
+                    }
+                }
+            }
+
+            // Mouse handling for card
+
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+                propagateComposedEvents: true
+                onEntered: {
+                    hoverTextAnimation.start()
+                    cardHovered = true
+                }
+                onExited: {
+                    cardHovered = false
+                }
+                MouseArea {
+                    id: mouse
+                    anchors.fill: parent
+                    anchors.margins: hoverText.anchors.margins
+                    onClicked: {
+                        cardHovered = false
+                        var fcount = PlasmaStyleBackend.stylesCount
+                        for (var i = 0 ; i < fcount ; i++) {
+                            plasmaStyleModel.setProperty(i, "selected", false)
+                        }
+                        plasmaStyleModel.setProperty(index, "selected", true)
+                        PlasmaStyleBackend.setSelectedStyle(index)
+                    }
+                }
             }
         }
     }

@@ -3,16 +3,93 @@
 // SPDX-License-Identifier: LGPL-2.1-or-later
 
 #include "backend/plasmastylebackend.h"
+#include <QAbstractListModel>
 
 PlasmaStyleBackend::PlasmaStyleBackend()
 {
+
+}
+
+PlasmaStyleBackend::~PlasmaStyleBackend()
+{
+
+}
+
+int PlasmaStyleBackend::selectedStyle() const
+{
+    return m_selectedStyleIndex;
+}
+
+void PlasmaStyleBackend::setSelectedStyle(int selectedStyleIndex)
+{
+    if (m_selectedStyleIndex == selectedStyleIndex) {
+        return;
+    }
+
+    for (int i=0; i<stylesCount(); i++) {
+        QVariantMap plasmaStyle = m_plasmaStyles[i].toMap();
+        plasmaStyle["selected"] = false;
+    }
+
+    QVariantMap plasmaStyle = m_plasmaStyles[selectedStyleIndex].toMap();
+    plasmaStyle["selected"] = true;
+    QString selectedStyle = plasmaStyle["folder"].toString();
+
+    QProcess *process = new QProcess(this->parent());
+    QStringList arguments;
+    arguments << selectedStyle;
+    process->execute("plasma-apply-desktoptheme",arguments);
+
+    m_selectedStyleIndex = selectedStyleIndex;
+    emit selectedStyleChanged(m_selectedStyleIndex);
+}
+
+int PlasmaStyleBackend::stylesCount() const
+{
+    return m_stylesCount;
+}
+
+void PlasmaStyleBackend::setStylesCount(int stylesCount)
+{
+    if (m_stylesCount == stylesCount) {
+        return;
+    }
+
+    m_stylesCount = stylesCount;
+    emit stylesCountChanged(m_stylesCount);
+}
+
+QVariantList PlasmaStyleBackend::plasmaStyles() const
+{
+    return m_plasmaStyles;
+}
+
+void PlasmaStyleBackend::setPlasmaStyles(QVariantList plasmaStyles)
+{
+    if (m_plasmaStyles == plasmaStyles) {
+        return;
+    }
+
+    m_plasmaStyles = plasmaStyles;
+    emit plasmaStylesChanged(m_plasmaStyles);
+}
+
+QStringList PlasmaStyleBackend::GetPlasmaStylesFolderList(QString path) const
+{
+    QDir directory = QDir(path);
+    QStringList folders = directory.entryList(QStringList() << "*", QDir::Dirs | QDir::NoDotAndDotDot);
+
+    return folders;
+}
+
+void PlasmaStyleBackend::getThemes()
+{
+    m_plasmaStyles.clear();
+
     // Obtener valor de estilo plasma seleccionado
     KConfig defaultThemesFile(QDir::homePath()+"/.config/plasmarc");
     KConfigGroup theme = defaultThemesFile.group("Theme");
     QString selectedStyle = theme.readEntry("name", QString());
-
-    m_selectedStyle = selectedStyle;
-    qDebug() << "Selected Plasma style: " << selectedStyle;
 
     // Obtener cuenta de esquemas de color
     QStringList folderlist1 = GetPlasmaStylesFolderList(QDir::homePath()+"/.local/share/plasma/desktoptheme");
@@ -42,7 +119,13 @@ PlasmaStyleBackend::PlasmaStyleBackend()
 
         item["folder"] = folderlist1[i];
         item["path"] = QDir::homePath() + "/.local/share/plasma/desktoptheme";
-        item["selected"] = folderlist1[i].contains(m_selectedStyle);
+
+        if (folderlist1[i] == selectedStyle) {
+            item["selected"] = true;
+        }
+        else {
+            item["selected"] = false;
+        }
 
         QString path1 = QDir::homePath() + "/.local/share/plasma/desktoptheme/" + folderlist1[i] + "/" + "metadata.desktop";
         QFile file1(path1);
@@ -95,7 +178,13 @@ PlasmaStyleBackend::PlasmaStyleBackend()
 
         item["folder"] = folderlist2[i];
         item["path"] = "/usr/share/plasma/desktoptheme";
-        item["selected"] = folderlist2[i].contains(m_selectedStyle);
+
+        if (folderlist2[i] == selectedStyle) {
+            item["selected"] = true;
+        }
+        else {
+            item["selected"] = false;
+        }
 
         QString path1 = "/usr/share/plasma/desktoptheme/" + folderlist2[i] + "/" + "metadata.desktop";
         QFile file1(path1);
@@ -143,66 +232,3 @@ PlasmaStyleBackend::PlasmaStyleBackend()
     }
 }
 
-PlasmaStyleBackend::~PlasmaStyleBackend()
-{
-}
-
-QString PlasmaStyleBackend::selectedStyle() const
-{
-    return m_selectedStyle;
-}
-
-void PlasmaStyleBackend::setSelectedStyle(const QString& selectedStyle)
-{
-    if (m_selectedStyle == selectedStyle) {
-        return;
-    }
-
-    QString& style = const_cast<QString&>(selectedStyle);
-
-    QProcess *process = new QProcess(this->parent());
-    QStringList arguments;
-    arguments << style;
-    process->execute("plasma-apply-desktoptheme",arguments);
-
-    m_selectedStyle = selectedStyle;
-    emit selectedStyleChanged(m_selectedStyle);
-}
-
-int PlasmaStyleBackend::stylesCount() const
-{
-    return m_stylesCount;
-}
-
-void PlasmaStyleBackend::setFilesCount(int stylesCount)
-{
-    if (m_stylesCount == stylesCount) {
-        return;
-    }
-
-    m_stylesCount = stylesCount;
-    emit stylesCountChanged(m_stylesCount);
-}
-
-QVariantList PlasmaStyleBackend::plasmaStyles() const
-{
-    return m_plasmaStyles;
-}
-
-void PlasmaStyleBackend::setPlasmaStyles(QVariantList plasmaStyles)
-{
-    if (m_plasmaStyles == plasmaStyles) {
-        return;
-    }
-
-    m_plasmaStyles = plasmaStyles;
-    emit plasmaStylesChanged(m_plasmaStyles);
-}
-
-QStringList PlasmaStyleBackend::GetPlasmaStylesFolderList(QString path) const
-{
-    QDir directory = QDir(path);
-    QStringList folders = directory.entryList(QStringList() << "*", QDir::Dirs | QDir::NoDotAndDotDot);
-
-    return folders;
-}

@@ -8,6 +8,7 @@ add_executable(kirigamisettings
     backend/colorschemesbackend.cpp
     backend/plasmastylebackend.cpp
     backend/wallpapersbackend.cpp
+    backend/aboutsystembackend.cpp
     resources.qrc)
 
 target_link_libraries(kirigamisettings

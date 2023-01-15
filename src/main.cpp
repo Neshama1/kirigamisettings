@@ -20,6 +20,7 @@
 #include "backend/colorschemesbackend.h"
 #include "backend/plasmastylebackend.h"
 #include "backend/wallpapersbackend.h"
+#include "backend/aboutsystembackend.h"
 
 Q_DECL_EXPORT int main(int argc, char *argv[])
 {
@@ -38,13 +39,13 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
                          // Short description of what the app does.
                          i18n("System manager for KDE platform settings based on Kirigami"),
                          // The license this code is released under.
-                         KAboutLicense::LGPL_V2_1,
+                         KAboutLicense::LGPL_V3,
                          // Copyright Statement.
-                         i18n("(c) 2022"));
-    aboutData.addAuthor(i18nc("@info:credit", "Neshamá Ruach"),
+                         i18n("(c) 2023"));
+    aboutData.addAuthor(i18nc("@info:credit", "Miguel Beltrán"),
                         i18nc("@info:credit", ""),
                         QStringLiteral("hopeandtruth6517@gmail.com"),
-                        QStringLiteral("https://build.opensuse.org/project/show/home:hopeandtruth6517"));
+                        QStringLiteral("https://github.com/Neshama1/kirigamisettings"));
     KAboutData::setApplicationData(aboutData);
 
     // Qt Quick Style:
@@ -60,6 +61,9 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
 
     WallpapersBackend wallpapersbackend;
     qmlRegisterSingletonInstance<WallpapersBackend>("org.kde.KirigamiSettings", 1, 0, "WallpapersBackend", &wallpapersbackend);
+
+    AboutSystemBackend aboutsystembackend;
+    qmlRegisterSingletonInstance<AboutSystemBackend>("org.kde.KirigamiSettings", 1, 0, "AboutSystemBackend", &aboutsystembackend);
 
     auto config = KirigamiSettingsConfig::self();
 

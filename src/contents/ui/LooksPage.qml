@@ -18,8 +18,8 @@ Kirigami.ScrollablePage {
         ListElement { name: "Colors" ; description: "Choose color scheme" ; iconItem: "preferences-desktop-color" }
         ListElement { name: "Plasma Style" ; description: "Choose plasma style" ; iconItem: "preferences-desktop-plasma-theme" }
         ListElement { name: "Wallpapers" ; description: "Choose wallpaper" ; iconItem: "preferences-desktop-wallpaper" }
-        ListElement { name: "Qt Quick Style" ; description: "Choose appearance settings for Kirigami and Mauikit applications" ; iconItem: "QtProject-qtcreator" }
-        ListElement { name: "Icons" ; description: "Choose icon theme" ; iconItem: "preferences-desktop-icons" }
+        ListElement { name: "Qt Quick Controls Style" ; description: "Choose appearance settings for Kirigami and Mauikit applications" ; iconItem: "QtProject-qtcreator" }
+//      ListElement { name: "Icons" ; description: "Choose icon theme" ; iconItem: "preferences-desktop-icons" }
     }
 
     ListView {
@@ -64,7 +64,15 @@ Kirigami.ScrollablePage {
         delegate: Kirigami.SwipeListItem {
             id: delegateItem
 
-            height: 45
+            height: 55 // 45
+
+            background: Rectangle {
+                anchors.fill: parent
+
+                Kirigami.Theme.colorSet: Kirigami.Theme.View
+                Kirigami.Theme.inherit: false
+                color: hovered ? Kirigami.Theme.hoverColor : Kirigami.Theme.backgroundColor
+            }
 
             RowLayout {
                 Layout.fillHeight: true

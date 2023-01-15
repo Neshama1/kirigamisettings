@@ -1,0 +1,75 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install"
+		],
+		"files" : 
+		[
+			"CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 38,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 39,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 40,
+				"parent" : 0
+			}
+		]
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 1,
+			"component" : "kirigamisettings",
+			"destination" : "share/applications",
+			"paths" : 
+			[
+				"org.kde.kirigamisettings.desktop"
+			],
+			"type" : "file"
+		},
+		{
+			"backtrace" : 2,
+			"component" : "kirigamisettings",
+			"destination" : "share/metainfo",
+			"paths" : 
+			[
+				"org.kde.kirigamisettings.metainfo.xml"
+			],
+			"type" : "file"
+		},
+		{
+			"backtrace" : 3,
+			"component" : "kirigamisettings",
+			"destination" : "share/icons/hicolor/scalable/apps",
+			"paths" : 
+			[
+				"org.kde.kirigamisettings.svg"
+			],
+			"type" : "file"
+		}
+	],
+	"paths" : 
+	{
+		"build" : ".",
+		"source" : "."
+	}
+}

@@ -25,8 +25,9 @@ Kirigami.ApplicationWindow {
 
     Component.onCompleted: {
         App.restoreWindowGeometry(root)
-        pageStack.push("qrc:/LooksPage.qml")
-        pageStack.push("qrc:/ColorSchemesPage.qml")
+        //pageStack.push("qrc:/LooksPage.qml")
+        //pageStack.push("qrc:/ColorSchemesPage.qml")
+        pageStack.push("qrc:/AboutSystemPage.qml")
         pageStack.currentIndex = 0
     }
 
@@ -78,7 +79,7 @@ Kirigami.ApplicationWindow {
                 group: "Look and feel"
             }
             ListElement {
-                name: "General Behavior"
+                name: "About the system"
                 description: ""
                 iconItem: "preferences-desktop"
             }
@@ -144,7 +145,17 @@ Kirigami.ApplicationWindow {
             delegate: Kirigami.SwipeListItem {
                 id: delegateItem
 
-                height: 45
+                height: 55 // 45
+
+                focusPolicy: Qt.WheelFocus
+
+                background: Rectangle {
+                    anchors.fill: parent
+
+                    Kirigami.Theme.colorSet: Kirigami.Theme.View
+                    Kirigami.Theme.inherit: false
+                    color: hovered ? Kirigami.Theme.hoverColor : Kirigami.Theme.backgroundColor
+                }
 
                 RowLayout {
                     Layout.fillHeight: true
@@ -176,7 +187,7 @@ Kirigami.ApplicationWindow {
                                         return
                                     }
                                     case 1: {
-                                        pageStack.push("qrc:/GeneralBehaviorPage.qml")
+                                        pageStack.push("qrc:/AboutSystemPage.qml")
                                         return
                                     }
                                 }

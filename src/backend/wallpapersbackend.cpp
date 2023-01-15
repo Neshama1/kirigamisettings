@@ -6,16 +6,88 @@
 
 WallpapersBackend::WallpapersBackend()
 {
+}
+
+WallpapersBackend::~WallpapersBackend()
+{
+}
+
+int WallpapersBackend::selectedWallpaper() const
+{
+    return m_selectedWallpaperIndex;
+}
+
+void WallpapersBackend::setSelectedWallpaper(int selectedWallpaperIndex)
+{
+    if (m_selectedWallpaperIndex == selectedWallpaperIndex) {
+        return;
+    }
+
+
+    for (int i=0; i<filesCount(); i++) {
+        QVariantMap wallpaper = m_wallpapers[i].toMap();
+        wallpaper["selected"] = false;
+    }
+
+    QVariantMap wallpaper = m_wallpapers[selectedWallpaperIndex].toMap();
+    wallpaper["selected"] = true;
+    QString wallpaperName = wallpaper["paperUrl"].toString();
+
+    QProcess *blendEffectProcess = new QProcess(this->parent());
+    QStringList blendEffectArguments;
+    blendEffectArguments << "call" << "--session" << "--dest=org.kde.KWin" << "--object-path=/org/kde/KWin/BlendChanges" << "--method=org.kde.KWin.BlendChanges.start" << "100";
+    blendEffectProcess->execute("gdbus",blendEffectArguments);
+
+    QProcess *process = new QProcess(this->parent());
+    QStringList arguments;
+    arguments << wallpaperName;
+    process->execute("plasma-apply-wallpaperimage",arguments);
+
+    m_selectedWallpaperIndex = selectedWallpaperIndex;
+    emit selectedWallpaperChanged(m_selectedWallpaperIndex);
+}
+
+int WallpapersBackend::filesCount() const
+{
+    return m_filesCount;
+}
+
+void WallpapersBackend::setFilesCount(int filesCount)
+{
+    if (m_filesCount == filesCount) {
+        return;
+    }
+
+    m_filesCount = filesCount;
+    emit filesCountChanged(m_filesCount);
+}
+
+QVariantList WallpapersBackend::wallpapers() const
+{
+    return m_wallpapers;
+}
+
+void WallpapersBackend::setWallpapers(QVariantList wallpapers)
+{
+    if (m_wallpapers == wallpapers) {
+        return;
+    }
+
+    m_wallpapers = wallpapers;
+    emit wallpapersChanged(m_wallpapers);
+}
+
+void WallpapersBackend::getThemes()
+{
+    m_wallpapers.clear();
+
     // Obtener el fondo de pantalla seleccionado
     KConfig wallpaperConfigFile(QDir::homePath()+"/.config/plasma-org.kde.plasma.desktop-appletsrc");
     KConfigGroup defaultWallpaperPlugin = wallpaperConfigFile.group("Containments").group("27").group("Wallpaper").group("org.kde.image").group("General");
     QString selectedWallpaper = defaultWallpaperPlugin.readEntry("Image", QString());
     selectedWallpaper.remove("file://");
 
-    m_selectedWallpaper = selectedWallpaper;
     qDebug() << "Selected wallpaper: " << selectedWallpaper;
-
-//-----------------------------------------------------------------------
 
     // User wallpapers
     KConfig userWallpaperConfigFile(QDir::homePath()+"/.config/plasmarc");
@@ -201,65 +273,4 @@ WallpapersBackend::WallpapersBackend()
             }
         }
     }
-}
-
-WallpapersBackend::~WallpapersBackend()
-{
-}
-
-QString WallpapersBackend::selectedWallpaper() const
-{
-    return m_selectedWallpaper;
-}
-
-void WallpapersBackend::setSelectedWallpaper(const QString& selectedWallpaper)
-{
-    if (m_selectedWallpaper == selectedWallpaper) {
-        return;
-    }
-
-    QProcess *blendEffectProcess = new QProcess(this->parent());
-    QStringList blendEffectArguments;
-    blendEffectArguments << "call" << "--session" << "--dest=org.kde.KWin" << "--object-path=/org/kde/KWin/BlendChanges" << "--method=org.kde.KWin.BlendChanges.start" << "100";
-    blendEffectProcess->execute("gdbus",blendEffectArguments);
-
-    QString& wallpaper = const_cast<QString&>(selectedWallpaper);
-
-    QProcess *process = new QProcess(this->parent());
-    QStringList arguments;
-    arguments << wallpaper;
-    process->execute("plasma-apply-wallpaperimage",arguments);
-
-    m_selectedWallpaper = selectedWallpaper;
-    emit selectedWallpaperChanged(m_selectedWallpaper);
-}
-
-int WallpapersBackend::filesCount() const
-{
-    return m_filesCount;
-}
-
-void WallpapersBackend::setFilesCount(int filesCount)
-{
-    if (m_filesCount == filesCount) {
-        return;
-    }
-
-    m_filesCount = filesCount;
-    emit filesCountChanged(m_filesCount);
-}
-
-QVariantList WallpapersBackend::wallpapers() const
-{
-    return m_wallpapers;
-}
-
-void WallpapersBackend::setWallpapers(QVariantList wallpapers)
-{
-    if (m_wallpapers == wallpapers) {
-        return;
-    }
-
-    m_wallpapers = wallpapers;
-    emit wallpapersChanged(m_wallpapers);
 }

@@ -10,7 +10,7 @@
         <file alias="ColorSchemesPage.qml">contents/ui/ColorSchemesPage.qml</file>
         <file alias="PlasmaStylePage.qml">contents/ui/PlasmaStylePage.qml</file>
         <file alias="WallpapersPage.qml">contents/ui/WallpapersPage.qml</file>
-        <file alias="GeneralBehaviorPage.qml">contents/ui/GeneralBehaviorPage.qml</file>
+        <file alias="AboutSystemPage.qml">contents/ui/AboutSystemPage.qml</file>
         <file alias="FloatingActionButton.qml">contents/ui/FloatingActionButton.qml</file>
     </qresource>
 </RCC>

@@ -20,7 +20,7 @@
 #include <QJsonValue>
 #include <QJsonArray>
 #include <QFile>
-
+#include <QAbstractListModel>
 
 /**
  * @todo write docs
@@ -28,9 +28,12 @@
 class PlasmaStyleBackend : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QString selectedStyle READ selectedStyle WRITE setSelectedStyle NOTIFY selectedStyleChanged)
-    Q_PROPERTY(int stylesCount READ stylesCount WRITE setFilesCount NOTIFY stylesCountChanged)
+    Q_PROPERTY(int selectedStyle READ selectedStyle WRITE setSelectedStyle NOTIFY selectedStyleChanged)
+    Q_PROPERTY(int stylesCount READ stylesCount WRITE setStylesCount NOTIFY stylesCountChanged)
     Q_PROPERTY(QVariantList plasmaStyles READ plasmaStyles WRITE setPlasmaStyles NOTIFY plasmaStylesChanged)
+
+public:
+    Q_INVOKABLE void getThemes();
 
 public:
     /**
@@ -46,7 +49,7 @@ public:
     /**
      * @return the selectedStyle
      */
-    QString selectedStyle() const;
+    int selectedStyle() const;
 
     /**
      * @return the stylesCount
@@ -64,14 +67,14 @@ public Q_SLOTS:
      *
      * @param selectedStyle the new selectedStyle
      */
-    void setSelectedStyle(const QString& selectedStyle);
+    void setSelectedStyle(int selectedStyleIndex);
 
     /**
      * Sets the stylesCount.
      *
      * @param stylesCount the new stylesCount
      */
-    void setFilesCount(int stylesCount);
+    void setStylesCount(int stylesCount);
 
     /**
      * Sets the plasmaStyles.
@@ -81,14 +84,14 @@ public Q_SLOTS:
     void setPlasmaStyles(QVariantList plasmaStyles);
 
 Q_SIGNALS:
-    void selectedStyleChanged(const QString& selectedStyle);
+    void selectedStyleChanged(int selectedStyleIndex);
 
     void stylesCountChanged(int stylesCount);
 
     void plasmaStylesChanged(QVariantList plasmaStyles);
 
 private:
-    QString m_selectedStyle;
+    int m_selectedStyleIndex;
     int m_stylesCount;
     QVariantList m_plasmaStyles;
 
