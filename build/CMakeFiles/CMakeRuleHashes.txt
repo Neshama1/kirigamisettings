@@ -1,8 +1,0 @@
-# Hashes of file build rules.
-85789e9431baec3f690a7cafcccd748c CMakeFiles/fetch-translations
-a665bd987ba823c16b9d2bb11e61662c CMakeFiles/uninstall
-2cdd0fbe3392c2ff47d97d8d250abef9 releaseme
-81bf1a3cb1e7cc9443aa8b39fc540272 src/CMakeFiles/kirigamisettings_autogen
-eb1f9a81a95bfc3111cf318970832d12 src/kirigamisettings_autogen/EWIEGA46WW/qrc_resources.cpp
-72a7387df4ecb94435b6e65df1d8d295 src/kirigamisettingsconfig.h
-987e703932bea42e02b8aea14d1259bd src/kirigamisettingsconfig.moc
