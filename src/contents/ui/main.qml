@@ -23,10 +23,10 @@ Kirigami.ApplicationWindow {
     onXChanged: saveWindowGeometryTimer.restart()
     onYChanged: saveWindowGeometryTimer.restart()
 
+    // Default page when application starts
+
     Component.onCompleted: {
         App.restoreWindowGeometry(root)
-        //pageStack.push("qrc:/LooksPage.qml")
-        //pageStack.push("qrc:/ColorSchemesPage.qml")
         pageStack.push("qrc:/AboutSystemPage.qml")
         pageStack.currentIndex = 0
     }
@@ -40,6 +40,8 @@ Kirigami.ApplicationWindow {
         interval: 1000
         onTriggered: App.saveWindowGeometry(root)
     }
+
+    // Menu
 
     globalDrawer: Kirigami.GlobalDrawer {
         title: i18n("Kirigami Settings")
@@ -63,12 +65,16 @@ Kirigami.ApplicationWindow {
         id: contextDrawer
     }
 
+    // Main page: Home
+
     pageStack.initialPage: page
 
     Kirigami.ScrollablePage {
         id: page
 
-        title: "Home"
+        title: i18n("Home")
+
+        // List of configuration options on home page
 
         ListModel {
         id: homeModel
@@ -80,10 +86,12 @@ Kirigami.ApplicationWindow {
             }
             ListElement {
                 name: "About the system"
-                description: ""
+                description: "Shows details about your PC"
                 iconItem: "preferences-desktop"
             }
         }
+
+        // List view: homeModel (data model or input data) + Kirigami.SwipeListItem delegate (QML component or visual form of data presentation)
 
         ListView {
             id: homeListView
@@ -111,7 +119,7 @@ Kirigami.ApplicationWindow {
                 duration: 250
             }
 
-            // Elements list header (groups)
+            // Elements list header (groups or sections)
 
             section.property: "group"
             section.delegate: sectionDelegate
@@ -138,9 +146,11 @@ Kirigami.ApplicationWindow {
                 }
             }
 
+            // Input data
+
             model: homeModel
 
-            // Elements list
+            // QML component or visual form of data presentation (elements list)
 
             delegate: Kirigami.SwipeListItem {
                 id: delegateItem
@@ -156,6 +166,8 @@ Kirigami.ApplicationWindow {
                     Kirigami.Theme.inherit: false
                     color: hovered ? Kirigami.Theme.hoverColor : Kirigami.Theme.backgroundColor
                 }
+
+                // Provides a way of dynamically arranging items in a Row (mode auto)
 
                 RowLayout {
                     Layout.fillHeight: true

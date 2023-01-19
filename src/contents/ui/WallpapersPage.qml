@@ -8,19 +8,14 @@ import org.kde.kirigami 2.19 as Kirigami
 import org.kde.KirigamiSettings 1.0
 import QtQml 2.15
 import QtGraphicalEffects 1.15
+import org.kde.kirigamiaddons.labs.mobileform 0.1 as MobileForm
 
-Kirigami.Page {
+Kirigami.ScrollablePage {
     id: wallpapersPage
 
     title: "Wallpapers"
 
-    // Page background color
-
-    background: Rectangle {
-        Kirigami.Theme.colorSet: Kirigami.Theme.Window
-        Kirigami.Theme.inherit: false
-        color: Kirigami.Theme.backgroundColor
-    }
+    // Get wallpapers
 
     Component.onCompleted: {
         getWallpapers()
@@ -58,7 +53,7 @@ Kirigami.Page {
         duration: 800
     }
 
-    // Add scheme overlay sheet
+    // Overlay sheet "Add scheme"
 
     Kirigami.OverlaySheet {
         id: infoSheet
@@ -79,259 +74,298 @@ Kirigami.Page {
 
         Kirigami.FormLayout {
             Controls.Label {
-                text: "Texto informativo"
+                text: i18n("Texto informativo")
             }
         }
     }
 
-    // Wallpapers cards
+    // Wallpaper cards
 
-    Kirigami.CardsGridView {
-        id: cardsGridView
+    Rectangle {
+    id: pageRect
 
         anchors.fill: parent
 
-        minimumColumnWidth: 50
-        maximumColumnWidth: 180 // 210
-        cellHeight: 156 // 186
-        model: wallpapersModel
+        // Page background color
+        Kirigami.Theme.colorSet: Kirigami.Theme.Window
+        Kirigami.Theme.inherit: false
+        color: Kirigami.Theme.backgroundColor
 
-        // Card
+        // Wallpapers cards in a grid view
 
-        delegate: Kirigami.Card {
-            id: card
+        GridView {
+            id: cardsGridView
 
-            property bool cardHovered: false
-            property bool paperSel: selected
+            anchors.fill: pageRect
 
-            height: 140 // 170
+            //anchors.centerIn: pageRect
+            //anchors.horizontalCenter: pageRect.center
+            //minimumColumnWidth: 50
+            //maximumColumnWidth: 180 // 210
+            //cellWidth: 120
 
-            Component.onCompleted: {
-                xAnimation.start()
-                opacityAnimation.start()
-                bannerOpacityAnimation.start()
+            property real columnCard
+            property string mivar
+
+            onWidthChanged: {
+                cellWidth = pageRect.width / Math.floor(pageRect.width / 100)
+                console.info(cellWidth)
             }
 
-            // Card animations
+            // cellWidth: pageRect.width / 6
+            // Kirigami.Units.gridUnit
 
-            PropertyAnimation {
-                id: xAnimation
-                target: card
-                properties: "x"
-                from: -5
-                to: 0
-                duration: 400
-            }
-            PropertyAnimation {
-                id: opacityAnimation
-                target: card
-                properties: "opacity"
-                from: 0.0
-                to: 1
-                duration: 400
-            }
-            PropertyAnimation {
-                id: bannerOpacityAnimation
-                target: banner
-                properties: "opacity"
-                from: 0.0
-                to: 1.0
-                duration: 2500
-                easing.type: Easing.InExpo
-            }
-            PropertyAnimation {
-                id: hoverTextAnimation
-                target: hoverRect
-                properties: "opacity"
-                from: 0
-                to: 1
-                duration: 1000
-            }
+            cellHeight: 156
 
-            // 1: Card view when the control is not being hovered
+            // Input data
 
-            Rectangle {
-                anchors.fill: card
+            model: wallpapersModel
+
+            // QML component or visual form of data presentation (Kirigami.Card)
+
+            delegate: Rectangle {
+                id: cardRect
+                width: cardsGridView.cellWidth
+                height: cardsGridView.cellHeight
                 color: "transparent"
-                visible: cardHovered ? false : true
 
-                // Wallpaper image
+                property bool cardHovered: false
+                property bool paperSel: selected
 
-                Kirigami.ShadowedImage {
-                    id: banner
-                    width: card.width
-                    height: card.height / 2
-                    source: Qt.resolvedUrl("file://" + paperUrl)
-                    asynchronous: true
-                    corners.topLeftRadius: 5
-                    corners.topRightRadius: 5
-                }
+                Kirigami.Card {
+                    id: card
 
-                // Wallpaper name
+                    width: cardRect.width - 10
+                    height: cardRect.height - 10
+                    anchors.centerIn: cardRect
 
-                Controls.Label {
-                    id: nameLabel
-                    //anchors.fill: banner
-                    anchors.top: banner.top
-                    width: banner.width
-                    padding: Kirigami.Units.largeSpacing
-                    color: "white"
-                    font.pointSize: 16
-                    elide: Text.ElideRight
-                    wrapMode: Text.WordWrap
-                    maximumLineCount: 1
-                    text: name
-                }
-
-                // Avatar icon (circle)
-
-                Rectangle {
-                    id: avatarIcon
-                    anchors.centerIn: parent
-                    color: "steelblue"
-                    width: 50
-                    height: width
-                    radius: width
-                    Controls.Label {
-                        anchors.centerIn: parent
-                        color: "white"
-                        font.pixelSize: 30
-                        font.capitalization: Font.Capitalize
-                        text: nameLabel.text.substring(0,1)
+                    Component.onCompleted: {
+                        xAnimation.start()
+                        opacityAnimation.start()
+                        bannerOpacityAnimation.start()
                     }
-                }
-            }
 
-            // Selection icon rectangle (icon background)
+                    // Card animations
 
-            Rectangle {
-                id: selectIconRect
-                implicitWidth: Kirigami.Units.iconSizes.small
-                implicitHeight: Kirigami.Units.iconSizes.small
-                anchors.bottom: hoverRect.bottom
-                anchors.right: hoverRect.right
-                anchors.margins: 4
-                scale: 1.2
-                radius: width
-                Kirigami.Theme.colorSet: Kirigami.Theme.View
-                Kirigami.Theme.inherit: false
-                color: Kirigami.Theme.disabledTextColor
-                opacity: 0.1
-                visible: cardHovered ? false : (paperSel ? true : false)
-            }
+                    PropertyAnimation {
+                        id: xAnimation
+                        target: card
+                        properties: "x"
+                        from: -5
+                        to: 0
+                        duration: 400
+                    }
+                    PropertyAnimation {
+                        id: opacityAnimation
+                        target: card
+                        properties: "opacity"
+                        from: 0.0
+                        to: 1
+                        duration: 400
+                    }
+                    PropertyAnimation {
+                        id: bannerOpacityAnimation
+                        target: banner
+                        properties: "opacity"
+                        from: 0.0
+                        to: 1.0
+                        duration: 2500
+                        easing.type: Easing.InExpo
+                    }
+                    PropertyAnimation {
+                        id: hoverTextAnimation
+                        target: hoverRect
+                        properties: "opacity"
+                        from: 0
+                        to: 1
+                        duration: 1000
+                    }
 
-            // Selection icon
+                    // 1: Card view when the control is not being hovered
 
-            Kirigami.Icon {
-                anchors.centerIn: selectIconRect
-                implicitWidth: Kirigami.Units.iconSizes.small
-                implicitHeight: Kirigami.Units.iconSizes.small
-                Kirigami.Theme.colorSet: Kirigami.Theme.View
-                Kirigami.Theme.inherit: false
-                color: Kirigami.Theme.textColor
-                opacity: 0.7
-                visible: cardHovered ? false : (paperSel ? true : false)
-                source: "emblem-ok-symbolic"
-            }
+                    Rectangle {
+                        anchors.fill: card
+                        color: "transparent"
+                        visible: cardHovered ? false : true
 
-            // 2: Card view when the control is being hovered
+                        // Wallpaper image
 
-            Rectangle {
-                id: hoverRect
-                opacity: 0
-                anchors.fill: parent
-                anchors.margins: 2
-                visible: cardHovered ? true : false
-                Kirigami.Theme.colorSet: Kirigami.Theme.View
-                Kirigami.Theme.inherit: false
-                color: Kirigami.Theme.backgroundColor
+                        Kirigami.ShadowedImage {
+                            id: banner
+                            width: card.width
+                            height: card.height / 2
+                            source: Qt.resolvedUrl("file://" + paperUrl)
+                            asynchronous: true
+                            corners.topLeftRadius: 5
+                            corners.topRightRadius: 5
+                        }
 
-                // Full wallpapawer name
+                        // Wallpaper name
 
-                Controls.Label {
-                    id: hoverText
-                    anchors.fill: parent
-                    anchors.margins: 25
-                    text: name
-                    fontSizeMode: Text.WrapAnywhere
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                    wrapMode: Text.Wrap
-                    minimumPixelSize: 10
-                    font.pixelSize: 38
-                }
+                        Controls.Label {
+                            id: nameLabel
+                            anchors.top: banner.top
+                            width: banner.width
+                            padding: Kirigami.Units.largeSpacing
+                            color: "white"
+                            font.pointSize: 16
+                            elide: Text.ElideRight
+                            wrapMode: Text.WordWrap
+                            maximumLineCount: 1
+                            text: name
+                        }
 
-                // Remove icon rectangle (circle)
+                        // Avatar icon (circle)
 
-                Rectangle {
-                    id: removeIconRect
-                    implicitWidth: Kirigami.Units.iconSizes.small
-                    implicitHeight: Kirigami.Units.iconSizes.small
-                    anchors.bottom: hoverRect.bottom
-                    anchors.right: hoverRect.right
-                    anchors.margins: 4
-                    scale: 1.2
-                    radius: width
-                    Kirigami.Theme.colorSet: Kirigami.Theme.View
-                    Kirigami.Theme.inherit: false
-                    color: Kirigami.Theme.disabledTextColor
-                    opacity: 0.1
-                    visible: paperUrl.includes("/usr/share/wallpapers") ? false : true
-                }
+                        Rectangle {
+                            id: avatarIcon
+                            anchors.centerIn: parent
+                            color: "steelblue"
+                            width: 50
+                            height: width
+                            radius: width
+                            Controls.Label {
+                                anchors.centerIn: parent
+                                color: "white"
+                                font.pixelSize: 30
+                                font.capitalization: Font.Capitalize
+                                text: nameLabel.text.substring(0,1)
+                            }
+                        }
+                    }
 
-                // Remove Icon
+                    // Selection icon rectangle (icon background)
 
-                Kirigami.Icon {
-                    id: removeIcon
-                    anchors.centerIn: removeIconRect
-                    x: card.width - 5
-                    y: hoverRect.height - implicitHeight - 5
-                    implicitWidth: Kirigami.Units.iconSizes.small
-                    implicitHeight: Kirigami.Units.iconSizes.small
-                    Kirigami.Theme.colorSet: Kirigami.Theme.View
-                    Kirigami.Theme.inherit: false
-                    color: Kirigami.Theme.textColor
-                    opacity: 0.7
-                    visible: paperUrl.includes("/usr/share/wallpapers") ? false : true
-                    source: "bqm-remove"
+                    Rectangle {
+                        id: selectIconRect
+                        implicitWidth: Kirigami.Units.iconSizes.small
+                        implicitHeight: Kirigami.Units.iconSizes.small
+                        anchors.bottom: hoverRect.bottom
+                        anchors.right: hoverRect.right
+                        anchors.margins: 4
+                        scale: 1.2
+                        radius: width
+                        Kirigami.Theme.colorSet: Kirigami.Theme.View
+                        Kirigami.Theme.inherit: false
+                        color: Kirigami.Theme.disabledTextColor
+                        opacity: 0.1
+                        visible: cardHovered ? false : (paperSel ? true : false)
+                    }
 
-                    // Action when remove was cliked
+                    // Selection icon
+
+                    Kirigami.Icon {
+                        anchors.centerIn: selectIconRect
+                        implicitWidth: Kirigami.Units.iconSizes.small
+                        implicitHeight: Kirigami.Units.iconSizes.small
+                        Kirigami.Theme.colorSet: Kirigami.Theme.View
+                        Kirigami.Theme.inherit: false
+                        color: Kirigami.Theme.textColor
+                        opacity: 0.7
+                        visible: cardHovered ? false : (paperSel ? true : false)
+                        source: "emblem-ok-symbolic"
+                    }
+
+                    // 2: Card view when the control is being hovered
+
+                    Rectangle {
+                        id: hoverRect
+                        opacity: 0
+                        anchors.fill: parent
+                        anchors.margins: 2
+                        visible: cardHovered ? true : false
+                        Kirigami.Theme.colorSet: Kirigami.Theme.View
+                        Kirigami.Theme.inherit: false
+                        color: Kirigami.Theme.backgroundColor
+
+                        // Full wallpaper name
+
+                        Controls.Label {
+                            id: hoverText
+                            anchors.fill: parent
+                            anchors.margins: 25
+                            text: name
+                            fontSizeMode: Text.WrapAnywhere
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            wrapMode: Text.Wrap
+                            minimumPixelSize: 10
+                            font.pixelSize: 38
+                        }
+
+                        // Remove icon rectangle (circle)
+
+                        Rectangle {
+                            id: removeIconRect
+                            implicitWidth: Kirigami.Units.iconSizes.small
+                            implicitHeight: Kirigami.Units.iconSizes.small
+                            anchors.bottom: hoverRect.bottom
+                            anchors.right: hoverRect.right
+                            anchors.margins: 4
+                            scale: 1.2
+                            radius: width
+                            Kirigami.Theme.colorSet: Kirigami.Theme.View
+                            Kirigami.Theme.inherit: false
+                            color: Kirigami.Theme.disabledTextColor
+                            opacity: 0.1
+                            visible: paperUrl.includes("/usr/share/wallpapers") ? false : true
+                        }
+
+                        // Remove Icon
+
+                        Kirigami.Icon {
+                            id: removeIcon
+                            anchors.centerIn: removeIconRect
+                            x: card.width - 5
+                            y: hoverRect.height - implicitHeight - 5
+                            implicitWidth: Kirigami.Units.iconSizes.small
+                            implicitHeight: Kirigami.Units.iconSizes.small
+                            Kirigami.Theme.colorSet: Kirigami.Theme.View
+                            Kirigami.Theme.inherit: false
+                            color: Kirigami.Theme.textColor
+                            opacity: 0.7
+                            visible: paperUrl.includes("/usr/share/wallpapers") ? false : true
+                            source: "bqm-remove"
+
+                            // Action when remove was cliked
+
+                            MouseArea {
+                                anchors.fill: removeIcon
+                                hoverEnabled: true
+                                onClicked: {
+                                    // infoSheet.open()
+                                }
+                            }
+                        }
+                    }
+
+                    // Mouse handling for card
 
                     MouseArea {
-                        anchors.fill: removeIcon
+                        anchors.fill: parent
                         hoverEnabled: true
-                        onClicked: {
-                            // infoSheet.open()
+                        propagateComposedEvents: true
+                        onEntered: {
+                            hoverTextAnimation.start()
+                            cardHovered = true
                         }
-                    }
-                }
-            }
-
-            // Mouse handling for card
-
-            MouseArea {
-                anchors.fill: parent
-                hoverEnabled: true
-                propagateComposedEvents: true
-                onEntered: {
-                    hoverTextAnimation.start()
-                    cardHovered = true
-                }
-                onExited: {
-                    cardHovered = false
-                }
-                MouseArea {
-                    id: mouse
-                    anchors.fill: parent
-                    anchors.margins: hoverText.anchors.margins
-                    onClicked: {
-                        cardHovered = false
-                        var fcount = WallpapersBackend.filesCount
-                        for (var i = 0 ; i < fcount ; i++) {
-                            wallpapersModel.setProperty(i, "selected", false)
+                        onExited: {
+                            cardHovered = false
                         }
-                        wallpapersModel.setProperty(index, "selected", true)
-                        WallpapersBackend.setSelectedWallpaper(index)
+                        MouseArea {
+                            id: mouse
+                            anchors.fill: parent
+                            anchors.margins: hoverText.anchors.margins
+                            onClicked: {
+                                cardHovered = false
+                                var fcount = WallpapersBackend.filesCount
+                                for (var i = 0 ; i < fcount ; i++) {
+                                    wallpapersModel.setProperty(i, "selected", false)
+                                }
+                                wallpapersModel.setProperty(index, "selected", true)
+                                WallpapersBackend.setSelectedWallpaper(index)
+                            }
+                        }
                     }
                 }
             }
