@@ -110,6 +110,7 @@ void WallpapersBackend::getThemes()
 
             if (paperUrl == selectedWallpaper) {
                 item["selected"] = true;
+                m_selectedWallpaperIndex = i;
             }
             else {
                 item["selected"] = false;
@@ -163,6 +164,7 @@ void WallpapersBackend::getThemes()
 
                 if (paperUrl == selectedWallpaper) {
                     item["selected"] = true;
+                    m_selectedWallpaperIndex = i;
                 }
                 else {
                     item["selected"] = false;

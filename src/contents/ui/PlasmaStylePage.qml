@@ -14,11 +14,14 @@ Kirigami.ScrollablePage {
     id: plasmaStylesPage
 
     title: "Plasma Style"
+    verticalScrollBarPolicy: Controls.ScrollBar.AlwaysOn
 
     // Page background color
 
     Component.onCompleted: {
         getPlasmaStyles()
+        opacityAnimation.start()
+        yAnimation.start()
         opacityButtonAnimation.start()
     }
 
@@ -26,7 +29,7 @@ Kirigami.ScrollablePage {
         PlasmaStyleBackend.getThemes()
         var fcount = PlasmaStyleBackend.stylesCount
         for (var i = 0 ; i < fcount ; i++) {
-            plasmaStyleModel.append({"name": PlasmaStyleBackend.plasmaStyles[i].name,"folder": PlasmaStyleBackend.plasmaStyles[i].folder,"path": PlasmaStyleBackend.plasmaStyles[i].path,"selected": PlasmaStyleBackend.plasmaStyles[i].selected})
+            plasmaStyleModel.append({"name": PlasmaStyleBackend.plasmaStyles[i].name,"folder": PlasmaStyleBackend.plasmaStyles[i].folder,"path": PlasmaStyleBackend.plasmaStyles[i].path,"selected": PlasmaStyleBackend.plasmaStyles[i].selected,"plasmaColor": PlasmaStyleBackend.plasmaStyles[i].plasmaColor})
         }
     }
 
@@ -51,6 +54,24 @@ Kirigami.ScrollablePage {
         from: 0.0
         to: 1
         duration: 800
+    }
+
+    PropertyAnimation {
+        id: opacityAnimation
+        target: PlasmaStylesPage
+        properties: "opacity"
+        from: 0.0
+        to: 1.0
+        duration: 600
+    }
+
+    PropertyAnimation {
+        id: yAnimation
+        target: PlasmaStylesPage
+        properties: "y"
+        from: -10
+        to: 0
+        duration: 400
     }
 
     // Overlay sheet "Add plasma style"
@@ -100,10 +121,10 @@ Kirigami.ScrollablePage {
             }
 
             MobileForm.FormCardHeader {
+                id: formCardHeader
 
                 visible: true
 
-                Layout.maximumWidth: parent.width + 100
                 Layout.leftMargin: Kirigami.Units.largeSpacing
                 Layout.rightMargin: Kirigami.Units.largeSpacing
                 Layout.bottomMargin: Kirigami.Units.largeSpacing * 2
@@ -126,31 +147,39 @@ Kirigami.ScrollablePage {
                         delegate: Kirigami.Card {
                             id: card
 
-                            Layout.minimumHeight: 150
+                            Layout.minimumHeight: 200
+                            Layout.maximumHeight: 400
 
                             property bool cardHovered: false
                             property bool styleSel: selected
 
                             Component.onCompleted: {
-                                //xAnimation.start()
                                 opacityAnimation.start()
-                                formCardGroup.height = 150 * (Math.floor(PlasmaStyleBackend.stylesCount / 5) + 1)
-                                plasmaStylesPage.verticalScrollBarPolicy = Controls.ScrollBar.AlwaysOn
-                                plasmaStylesPage.flickable.contentHeight = formCardGroup.height + Kirigami.Units.largeSpacing
+
+                                // Mutar para columnas adaptables
+                                grid.columns = 3
+
+                                formCardHeader.height = Layout.minimumHeight * (Math.ceil(PlasmaStyleBackend.stylesCount / (grid.width / 100)))
+                                plasmaStylesPage.flickable.contentHeight = formCardGroup.height + Kirigami.Units.largeSpacing + 65
                                 plasmaStylesPage.flickable.width = plasmaStylesPage.width
                             }
 
-                            // Card animations
-/*
-                            PropertyAnimation {
-                                id: xAnimation
-                                target: card
-                                properties: "x"
-                                from: -5
-                                to: 0
-                                duration: 400
+                            Connections {
+                                target: formCardHeader
+                                onWidthChanged: {
+                                    formCardHeader.height = Layout.minimumHeight * (Math.ceil(PlasmaStyleBackend.stylesCount / grid.columns))
+                                    plasmaStylesPage.flickable.contentHeight = formCardGroup.height + Kirigami.Units.largeSpacing + 65
+                                    plasmaStylesPage.flickable.width = plasmaStylesPage.width
+                                }
+                                onHeightChanged: {
+                                    formCardHeader.height = Layout.minimumHeight * (Math.ceil(PlasmaStyleBackend.stylesCount / grid.columns))
+                                    plasmaStylesPage.flickable.contentHeight = formCardGroup.height + Kirigami.Units.largeSpacing + 65
+                                    plasmaStylesPage.flickable.width = plasmaStylesPage.width
+                                }
                             }
-*/
+
+                            // Card animations
+
                             PropertyAnimation {
                                 id: opacityAnimation
                                 target: card
@@ -159,43 +188,74 @@ Kirigami.ScrollablePage {
                                 to: 1
                                 duration: 800
                             }
-                            PropertyAnimation {
-                                id: hoverTextAnimation
-                                target: hoverRect
-                                properties: "opacity"
-                                from: 0.0
-                                to: 1
-                                duration: 1000
+
+                            // Plasma color banner (Plasma Color)
+
+                            Rectangle {
+                                id: banner
+                                anchors.horizontalCenter: card.horizontalCenter
+                                width: card.width - 2
+                                height: card.height / 2 - 1
+                                y: 1
+                                color: plasmaColor
+                                opacity: 0
+
+                                Component.onCompleted: {
+                                    bannerOpacityAnimation.start()
+                                }
+
+                                PropertyAnimation {
+                                    id: bannerOpacityAnimation
+                                    target: banner
+                                    properties: "opacity"
+                                    from: 0.0
+                                    to: 0.8
+                                    duration: 2500
+                                    easing.type: Easing.InExpo
+                                }
+
+                                layer.enabled: true
+                                layer.effect: OpacityMask {
+                                    maskSource: Item {
+                                        width: banner.width
+                                        height: banner.height
+                                        Rectangle {
+                                            anchors.centerIn: parent
+                                            width: banner.width
+                                            height: banner.height
+                                            radius: 4
+                                        }
+                                    }
+                                }
                             }
 
-                            // 1: Card view when the control is not being hovered
-
-                            // Card banner
-
-                            banner {
-                                id: cardBanner
-                                iconSource: "color-fill"
-                                opacity: 0.9
-                                title: folder
-                                visible: cardHovered ? false : true
+                            Controls.Label {
+                                anchors.top: banner.bottom
+                                width: parent.width
+                                padding: Kirigami.Units.largeSpacing
+                                font.pointSize: 16
+                                elide: Text.ElideRight
+                                wrapMode: Text.WordWrap
+                                maximumLineCount: 1
+                                text: name
                             }
 
                             // Selection icon rectangle (icon background)
 
                             Rectangle {
                                 id: selectIconRect
-                                implicitWidth: Kirigami.Units.iconSizes.small
-                                implicitHeight: Kirigami.Units.iconSizes.small
-                                anchors.bottom: hoverRect.bottom
-                                anchors.right: hoverRect.right
-                                anchors.margins: 4
+                                implicitWidth: Kirigami.Units.iconSizes.medium
+                                implicitHeight: Kirigami.Units.iconSizes.medium
+                                anchors.bottom: card.bottom
+                                anchors.right: card.right
+                                anchors.margins: 8
                                 scale: 1.2
                                 radius: width
                                 Kirigami.Theme.colorSet: Kirigami.Theme.View
                                 Kirigami.Theme.inherit: false
                                 color: Kirigami.Theme.disabledTextColor
                                 opacity: 0.1
-                                visible: cardHovered ? false : (styleSel ? true : false)
+                                visible: styleSel ? true : false
                             }
 
                             // Selection icon
@@ -208,119 +268,25 @@ Kirigami.ScrollablePage {
                                 Kirigami.Theme.inherit: false
                                 color: Kirigami.Theme.textColor
                                 opacity: 0.7
-                                visible: cardHovered ? false : (styleSel ? true : false)
+                                visible: styleSel ? true : false
                                 source: "emblem-ok-symbolic"
                             }
 
-                            // 2: Card view when the control is being hovered
-
-                            Rectangle {
-                                id: hoverRect
-                                opacity: 0
-                                anchors.fill: parent
-                                anchors.margins: 2
-                                visible: cardHovered ? true : false
-                                Kirigami.Theme.colorSet: Kirigami.Theme.View
-                                Kirigami.Theme.inherit: false
-                                color: Kirigami.Theme.backgroundColor
-
-                                // Full plasma theme name
-
-                                Controls.Label {
-                                    id: hoverText
-                                    anchors.fill: parent
-                                    anchors.margins: 25
-                                    text: folder
-                                    fontSizeMode: Text.WrapAnywhere
-                                    horizontalAlignment: Text.AlignHCenter
-                                    verticalAlignment: Text.AlignVCenter
-                                    wrapMode: Text.Wrap
-                                    minimumPixelSize: 10
-                                    font.pixelSize: 38
-                                }
-
-                                // Remove icon rectangle (circle)
-
-                                Rectangle {
-                                    id: removeIconRect
-                                    implicitWidth: Kirigami.Units.iconSizes.small
-                                    implicitHeight: Kirigami.Units.iconSizes.small
-                                    anchors.bottom: hoverRect.bottom
-                                    anchors.right: hoverRect.right
-                                    anchors.margins: 4
-                                    scale: 1.2
-                                    radius: width
-                                    Kirigami.Theme.colorSet: Kirigami.Theme.View
-                                    Kirigami.Theme.inherit: false
-                                    color: Kirigami.Theme.disabledTextColor
-                                    opacity: 0.1
-                                    visible: paperUrl.includes("/usr/share/wallpapers") ? false : true
-                                }
-
-                                // Remove Icon
-
-                                Kirigami.Icon {
-                                    id: removeIcon
-                                    anchors.centerIn: removeIconRect
-                                    x: card.width - 5
-                                    y: hoverRect.height - implicitHeight - 5
-                                    implicitWidth: Kirigami.Units.iconSizes.small
-                                    implicitHeight: Kirigami.Units.iconSizes.small
-                                    Kirigami.Theme.colorSet: Kirigami.Theme.View
-                                    Kirigami.Theme.inherit: false
-                                    color: Kirigami.Theme.textColor
-                                    opacity: 0.7
-                                    visible: paperUrl.includes("/usr/share/wallpapers") ? false : true
-                                    source: "bqm-remove"
-
-                                    // Action when remove was cliked
-
-                                    MouseArea {
-                                        anchors.fill: removeIcon
-                                        hoverEnabled: true
-                                        onClicked: {
-                                            // infoSheet.open()
-                                        }
-                                    }
-                                }
-                            }
-
-                            // Mouse handling for card
+                            // Mouse handling
 
                             MouseArea {
-                                anchors.fill: card
+                                id: mouse
+                                anchors.fill: parent
+                                anchors.bottomMargin: 40
                                 hoverEnabled: true
-                                propagateComposedEvents: true
 
-                                // When the mouse enters on card
-
-                                onEntered: {
-                                    hoverTextAnimation.start()
-                                    cardHovered = true
-                                }
-
-                                // When the mouse leaves the card
-
-                                onExited: {
-                                    cardHovered = false
-                                }
-
-                                // When card was cliked
-
-                                MouseArea {
-                                    id: mouse
-                                    anchors.fill: parent
-                                    anchors.margins: hoverText.anchors.margins
-
-                                    onClicked: {
-                                        cardHovered = false
-                                        var fcount = PlasmaStyleBackend.stylesCount
-                                        for (var i = 0 ; i < fcount ; i++) {
-                                            plasmaStyleModel.setProperty(i, "selected", false)
-                                        }
-                                        plasmaStyleModel.setProperty(index, "selected", true)
-                                        PlasmaStyleBackend.setSelectedStyle(index)
+                                onClicked: {
+                                    var fcount = PlasmaStyleBackend.stylesCount
+                                    for (var i = 0 ; i < fcount ; i++) {
+                                        plasmaStyleModel.setProperty(i, "selected", false)
                                     }
+                                    plasmaStyleModel.setProperty(index, "selected", true)
+                                    PlasmaStyleBackend.setSelectedStyle(index)
                                 }
                             }
                         }

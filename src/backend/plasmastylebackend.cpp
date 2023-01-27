@@ -122,6 +122,7 @@ void PlasmaStyleBackend::getThemes()
 
         if (folderlist1[i] == selectedStyle) {
             item["selected"] = true;
+            m_selectedStyleIndex = i;
         }
         else {
             item["selected"] = false;
@@ -134,6 +135,32 @@ void PlasmaStyleBackend::getThemes()
             KConfig plasmaStyle(path1);
             KConfigGroup desktopEntry = plasmaStyle.group("Desktop Entry");
             item["name"] = desktopEntry.readEntry("Name", QString());
+
+            QString path = QDir::homePath() + "/.local/share/plasma/desktoptheme/" + folderlist1[i] + "/" + "colors";
+            QFile file(path);
+
+            if (file.exists(path)) {
+                // Plasma theme makes use of the system color scheme
+                file.open(QIODevice::ReadOnly | QIODevice::Text);
+                QString val;
+                val = file.readAll();
+                file.close();
+
+                KConfig plasmaColors(path);
+                KConfigGroup colorsWindow = plasmaColors.group("Colors:Window");
+                item["plasmaColor"] = colorsWindow.readEntry("BackgroundNormal", QColor(Qt::white)).name();
+            }
+            else{
+                // Plasma theme makes use of its own color scheme
+                KConfig defaultThemesFile(QDir::homePath()+"/.config/kdeglobals");
+                KConfigGroup general = defaultThemesFile.group("General");
+                QString selectedScheme = general.readEntry("ColorScheme", QString());
+
+                KConfig colorScheme(selectedScheme);
+                KConfigGroup ColorsWindow = colorScheme.group("Colors:Window");
+                item["plasmaColor"] = ColorsWindow.readEntry("BackgroundNormal", QColor(Qt::white)).name();
+            }
+
             m_plasmaStyles.append(item);
         }
 
@@ -168,6 +195,31 @@ void PlasmaStyleBackend::getThemes()
 
             item["name"] = name;
 
+            QString path = QDir::homePath() + "/.local/share/plasma/desktoptheme/" + folderlist1[i] + "/" + "colors";
+            QFile file(path);
+
+            if (file.exists(path)) {
+                // Plasma theme makes use of the system color scheme
+                file.open(QIODevice::ReadOnly | QIODevice::Text);
+                QString val;
+                val = file.readAll();
+                file.close();
+
+                KConfig plasmaColors(path);
+                KConfigGroup colorsWindow = plasmaColors.group("Colors:Window");
+                item["plasmaColor"] = colorsWindow.readEntry("BackgroundNormal", QColor(Qt::white)).name();
+            }
+            else{
+                // Plasma theme makes use of its own color scheme
+                KConfig defaultThemesFile(QDir::homePath()+"/.config/kdeglobals");
+                KConfigGroup general = defaultThemesFile.group("General");
+                QString selectedScheme = general.readEntry("ColorScheme", QString());
+
+                KConfig colorScheme(selectedScheme);
+                KConfigGroup ColorsWindow = colorScheme.group("Colors:Window");
+                item["plasmaColor"] = ColorsWindow.readEntry("BackgroundNormal", QColor(Qt::white)).name();
+            }
+
             m_plasmaStyles.append(item);
         }
     }
@@ -181,6 +233,7 @@ void PlasmaStyleBackend::getThemes()
 
         if (folderlist2[i] == selectedStyle) {
             item["selected"] = true;
+            m_selectedStyleIndex = i;
         }
         else {
             item["selected"] = false;
@@ -193,6 +246,32 @@ void PlasmaStyleBackend::getThemes()
             KConfig plasmaStyle(path1);
             KConfigGroup desktopEntry = plasmaStyle.group("Desktop Entry");
             item["name"] = desktopEntry.readEntry("Name", QString());
+
+            QString path = QDir::homePath() + "/usr/share/plasma/desktoptheme/" + folderlist2[i] + "/" + "colors";
+            QFile file(path);
+
+            if (file.exists(path)) {
+                // Plasma theme makes use of the system color scheme
+                file.open(QIODevice::ReadOnly | QIODevice::Text);
+                QString val;
+                val = file.readAll();
+                file.close();
+
+                KConfig plasmaColors(path);
+                KConfigGroup colorsWindow = plasmaColors.group("Colors:Window");
+                item["plasmaColor"] = colorsWindow.readEntry("BackgroundNormal", QColor(Qt::white)).name();
+            }
+            else{
+                // Plasma theme makes use of its own color scheme
+                KConfig defaultThemesFile(QDir::homePath()+"/.config/kdeglobals");
+                KConfigGroup general = defaultThemesFile.group("General");
+                QString selectedScheme = general.readEntry("ColorScheme", QString());
+
+                KConfig colorScheme(selectedScheme);
+                KConfigGroup ColorsWindow = colorScheme.group("Colors:Window");
+                item["plasmaColor"] = ColorsWindow.readEntry("BackgroundNormal", QColor(Qt::white)).name();
+            }
+
             m_plasmaStyles.append(item);
         }
 
@@ -226,6 +305,31 @@ void PlasmaStyleBackend::getThemes()
             }
 
             item["name"] = name;
+
+            QString path = QDir::homePath() + "/usr/share/plasma/desktoptheme/" + folderlist2[i] + "/" + "colors";
+            QFile file(path);
+
+            if (file.exists(path)) {
+                // Plasma theme makes use of the system color scheme
+                file.open(QIODevice::ReadOnly | QIODevice::Text);
+                QString val;
+                val = file.readAll();
+                file.close();
+
+                KConfig plasmaColors(path);
+                KConfigGroup colorsWindow = plasmaColors.group("Colors:Window");
+                item["plasmaColor"] = colorsWindow.readEntry("BackgroundNormal", QColor(Qt::white)).name();
+            }
+            else{
+                // Plasma theme makes use of its own color scheme
+                KConfig defaultThemesFile(QDir::homePath()+"/.config/kdeglobals");
+                KConfigGroup general = defaultThemesFile.group("General");
+                QString selectedScheme = general.readEntry("ColorScheme", QString());
+
+                KConfig colorScheme(selectedScheme);
+                KConfigGroup ColorsWindow = colorScheme.group("Colors:Window");
+                item["plasmaColor"] = ColorsWindow.readEntry("BackgroundNormal", QColor(Qt::white)).name();
+            }
 
             m_plasmaStyles.append(item);
         }

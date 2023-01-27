@@ -123,6 +123,7 @@ void ColorSchemesBackend::getThemes()
 
         if (cleanSchemeName == selectedScheme) {
             item["selected"] = true;
+            m_selectedSchemeIndex = i;
         }
         else {
             item["selected"] = false;
@@ -157,6 +158,7 @@ void ColorSchemesBackend::getThemes()
 
         if (cleanSchemeName == selectedScheme) {
             item["selected"] = true;
+            m_selectedSchemeIndex = i;
         }
         else {
             item["selected"] = false;
