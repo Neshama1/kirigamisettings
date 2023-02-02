@@ -189,5 +189,5 @@ void IconsBackend::getThemes()
         j++;
     }
 
-    m_themesCount = j - 1;
+    m_themesCount = j;
 }
