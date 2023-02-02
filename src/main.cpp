@@ -21,6 +21,7 @@
 #include "backend/plasmastylebackend.h"
 #include "backend/wallpapersbackend.h"
 #include "backend/aboutsystembackend.h"
+#include "backend/iconsbackend.h"
 
 Q_DECL_EXPORT int main(int argc, char *argv[])
 {
@@ -64,6 +65,9 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
 
     AboutSystemBackend aboutsystembackend;
     qmlRegisterSingletonInstance<AboutSystemBackend>("org.kde.KirigamiSettings", 1, 0, "AboutSystemBackend", &aboutsystembackend);
+
+    IconsBackend iconsbackend;
+    qmlRegisterSingletonInstance<IconsBackend>("org.kde.KirigamiSettings", 1, 0, "IconsBackend", &iconsbackend);
 
     auto config = KirigamiSettingsConfig::self();
 

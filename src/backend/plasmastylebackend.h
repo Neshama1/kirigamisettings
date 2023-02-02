@@ -22,8 +22,6 @@
 #include <QFile>
 #include <QAbstractListModel>
 #include <QColor>
-#include <KConfig>
-#include <KConfigGroup>
 
 /**
  * @todo write docs

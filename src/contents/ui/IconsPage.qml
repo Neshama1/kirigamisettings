@@ -11,33 +11,33 @@ import QtGraphicalEffects 1.15
 import org.kde.kirigamiaddons.labs.mobileform 0.1 as MobileForm
 
 Kirigami.ScrollablePage {
-    id: colorSchemesPage
+    id: iconsThemesPage
 
-    title: "Color Schemes"
+    title: "Icons Theme"
     verticalScrollBarPolicy: Controls.ScrollBar.AlwaysOn
 
     // Page background color
 
     Component.onCompleted: {
-        getColorSchemes()
+        getIconsThemes()
         opacityAnimation.start()
         yAnimation.start()
         opacityButtonAnimation.start()
     }
 
-    function getColorSchemes() {
-        ColorSchemesBackend.getThemes()
-        var fcount = ColorSchemesBackend.filesCount
+    function getIconsThemes() {
+        IconsBackend.getThemes()
+        var fcount = IconsBackend.themesCount
         for (var i = 0 ; i < fcount ; i++) {
-            colorSchemesModel.append({"name": ColorSchemesBackend.colorSchemes[i].name,"titleBarColor": ColorSchemesBackend.colorSchemes[i].titleBarColor,"windowColor": ColorSchemesBackend.colorSchemes[i].windowColor,"selectionColor": ColorSchemesBackend.colorSchemes[i].selectionColor,"fileName": ColorSchemesBackend.colorSchemes[i].fileName,"path": ColorSchemesBackend.colorSchemes[i].path,"selected": ColorSchemesBackend.colorSchemes[i].selected})
+            iconsModel.append({"name": IconsBackend.iconsThemes[i].name,"path": IconsBackend.iconsThemes[i].path,"selected": IconsBackend.iconsThemes[i].selected})
         }
     }
 
     ListModel {
-        id: colorSchemesModel
+        id: iconsModel
     }
 
-    // Floating button to add scheme and animation
+    // Floating button to add sche"plasmaColor": IconsBackend.iconsThemes[i].plasmaColorme and animation
 
     footer: FloatingActionButton {
         id: floatingButton
@@ -58,7 +58,7 @@ Kirigami.ScrollablePage {
 
     PropertyAnimation {
         id: opacityAnimation
-        target: colorSchemesPage
+        target: iconsThemesPage
         properties: "opacity"
         from: 0.0
         to: 1.0
@@ -67,14 +67,14 @@ Kirigami.ScrollablePage {
 
     PropertyAnimation {
         id: yAnimation
-        target: colorSchemesPage
+        target: iconsThemesPage
         properties: "y"
         from: -10
         to: 0
         duration: 400
     }
 
-    // Overlay sheet "Add scheme"
+    // Overlay sheet "Add plasma style"
 
     Kirigami.OverlaySheet {
         id: infoSheet
@@ -90,7 +90,7 @@ Kirigami.ScrollablePage {
         }
 
         header: Kirigami.Heading {
-            text: i18nc("@title:window", "Add scheme")
+            text: i18nc("@title:window", "Add icon theme")
         }
 
         Kirigami.FormLayout {
@@ -113,11 +113,11 @@ Kirigami.ScrollablePage {
             // spacing: 0
 
             MobileForm.FormCardHeader {
-                title: i18n("Color Schemes")
+                title: i18n("Icons themes")
             }
 
             MobileForm.FormTextDelegate {
-                text: i18n("Personalize your scheme")
+                text: i18n("Personalize your style")
             }
 
             MobileForm.FormCardHeader {
@@ -142,7 +142,7 @@ Kirigami.ScrollablePage {
                     Repeater {
                         id: cardRepeater
 
-                        model: colorSchemesModel
+                        model: iconsModel
 
                         delegate: Kirigami.Card {
                             id: card
@@ -150,8 +150,7 @@ Kirigami.ScrollablePage {
                             Layout.minimumHeight: 200
                             Layout.maximumHeight: 400
 
-                            property bool cardHovered: false
-                            property bool schemeSel: selected
+                            property bool themeSel: selected
 
                             Component.onCompleted: {
                                 opacityAnimation.start()
@@ -159,22 +158,22 @@ Kirigami.ScrollablePage {
                                 // Mutar para columnas adaptables
                                 grid.columns = 3
 
-                                formCardGroup.height = Layout.minimumHeight * (Math.ceil(ColorSchemesBackend.colorSchemes / (grid.width / 100)))
-                                colorSchemesPage.flickable.contentHeight = formCardGroup.height + Kirigami.Units.largeSpacing
-                                colorSchemesPage.flickable.width = colorSchemesPage.width
+                                formCardHeader.height = Layout.minimumHeight * (Math.ceil(IconsBackend.themesCount / (grid.width / 100)))
+                                iconsThemesPage.flickable.contentHeight = formCardGroup.height + Kirigami.Units.largeSpacing + 65
+                                iconsThemesPage.flickable.width = iconsThemesPage.width
                             }
 
                             Connections {
                                 target: formCardHeader
                                 onWidthChanged: {
-                                    formCardHeader.height = Layout.minimumHeight * (Math.ceil(PlasmaStyleBackend.stylesCount / grid.columns))
-                                    colorSchemesPage.flickable.contentHeight = formCardGroup.height + Kirigami.Units.largeSpacing + 65
-                                    colorSchemesPage.flickable.width = colorSchemesPage.width
+                                    formCardHeader.height = Layout.minimumHeight * (Math.ceil(IconsBackend.themesCount / grid.columns))
+                                    iconsThemesPage.flickable.contentHeight = formCardGroup.height + Kirigami.Units.largeSpacing + 65
+                                    iconsThemesPage.flickable.width = iconsThemesPage.width
                                 }
                                 onHeightChanged: {
-                                    formCardHeader.height = Layout.minimumHeight * (Math.ceil(PlasmaStyleBackend.stylesCount / grid.columns))
-                                    colorSchemesPage.flickable.contentHeight = formCardGroup.height + Kirigami.Units.largeSpacing + 65
-                                    colorSchemesPage.flickable.width = colorSchemesPage.width
+                                    formCardHeader.height = Layout.minimumHeight * (Math.ceil(IconsBackend.themesCount / grid.columns))
+                                    iconsThemesPage.flickable.contentHeight = formCardGroup.height + Kirigami.Units.largeSpacing + 65
+                                    iconsThemesPage.flickable.width = iconsThemesPage.width
                                 }
                             }
 
@@ -189,7 +188,7 @@ Kirigami.ScrollablePage {
                                 duration: 800
                             }
 
-                            // Color Banner (Window Color)
+                            // Banner (Icons)
 
                             Rectangle {
                                 id: banner
@@ -197,7 +196,7 @@ Kirigami.ScrollablePage {
                                 width: card.width - 2
                                 height: card.height / 2 - 1
                                 y: 1
-                                color: windowColor
+                                color: Kirigami.Theme.backgroundColor
                                 opacity: 0
 
                                 Component.onCompleted: {
@@ -255,7 +254,7 @@ Kirigami.ScrollablePage {
                                 Kirigami.Theme.inherit: false
                                 color: Kirigami.Theme.disabledTextColor
                                 opacity: 0.1
-                                visible: schemeSel ? true : false
+                                visible: themeSel ? true : false
                             }
 
                             // Selection icon
@@ -268,7 +267,7 @@ Kirigami.ScrollablePage {
                                 Kirigami.Theme.inherit: false
                                 color: Kirigami.Theme.textColor
                                 opacity: 0.7
-                                visible: schemeSel ? true : false
+                                visible: themeSel ? true : false
                                 source: "emblem-ok-symbolic"
                             }
 
@@ -281,12 +280,12 @@ Kirigami.ScrollablePage {
                                 hoverEnabled: true
 
                                 onClicked: {
-                                    var fcount = ColorSchemesBackend.filesCount
+                                    var fcount = IconsBackend.themesCount
                                     for (var i = 0 ; i < fcount ; i++) {
-                                        colorSchemesModel.setProperty(i, "selected", false)
+                                        iconsModel.setProperty(i, "selected", false)
                                     }
-                                    colorSchemesModel.setProperty(index, "selected", true)
-                                    ColorSchemesBackend.setSelectedScheme(index)
+                                    iconsModel.setProperty(index, "selected", true)
+                                    IconsBackend.setSelectedTheme(index)
                                 }
                             }
                         }

@@ -18,8 +18,8 @@ Kirigami.ScrollablePage {
         ListElement { name: "Colors" ; description: "Choose color scheme" ; iconItem: "preferences-desktop-color" }
         ListElement { name: "Plasma Style" ; description: "Choose plasma style" ; iconItem: "preferences-desktop-plasma-theme" }
         ListElement { name: "Wallpapers" ; description: "Choose wallpaper" ; iconItem: "preferences-desktop-wallpaper" }
+        ListElement { name: "Icons" ; description: "Choose icon theme" ; iconItem: "preferences-desktop-icons" }
         ListElement { name: "Qt Quick Controls Style" ; description: "Choose appearance settings for Kirigami and Mauikit applications" ; iconItem: "QtProject-qtcreator" }
-//      ListElement { name: "Icons" ; description: "Choose icon theme" ; iconItem: "preferences-desktop-icons" }
     }
 
     ListView {
@@ -106,6 +106,10 @@ Kirigami.ScrollablePage {
                                 }
                                 case 2: {
                                     pageStack.push("qrc:/WallpapersPage.qml")
+                                    return
+                                }
+                                case 3: {
+                                    pageStack.push("qrc:/IconsPage.qml")
                                     return
                                 }
                             }
