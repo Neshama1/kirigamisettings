@@ -22,6 +22,7 @@
 #include "backend/wallpapersbackend.h"
 #include "backend/aboutsystembackend.h"
 #include "backend/iconsbackend.h"
+#include "backend/cursorsbackend.h"
 
 Q_DECL_EXPORT int main(int argc, char *argv[])
 {
@@ -68,6 +69,9 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
 
     IconsBackend iconsbackend;
     qmlRegisterSingletonInstance<IconsBackend>("org.kde.KirigamiSettings", 1, 0, "IconsBackend", &iconsbackend);
+
+    CursorsBackend cursorsbackend;
+    qmlRegisterSingletonInstance<CursorsBackend>("org.kde.KirigamiSettings", 1, 0, "CursorsBackend", &cursorsbackend);
 
     auto config = KirigamiSettingsConfig::self();
 

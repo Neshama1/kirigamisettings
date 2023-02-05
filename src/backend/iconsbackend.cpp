@@ -23,8 +23,6 @@ void IconsBackend::setSelectedTheme(int selectedThemeIndex)
         return;
     }
 
-    qDebug() << "Establecer tema con índice: " << selectedThemeIndex;
-
     for (int i=0; i<themesCount(); i++) {
         QVariantMap iconTheme = m_iconsThemes[i].toMap();
         iconTheme["selected"] = false;
@@ -32,9 +30,7 @@ void IconsBackend::setSelectedTheme(int selectedThemeIndex)
 
     QVariantMap iconTheme = m_iconsThemes[selectedThemeIndex].toMap();
     iconTheme["selected"] = true;
-    QString selectedTheme = iconTheme["name"].toString();
-
-    qDebug() << "Tema seleccionado: " << selectedTheme;
+    QString selectedTheme = iconTheme["folderName"].toString();
 
     // Locate plasma-changeicons
     QProcess *locate = new QProcess(this->parent());
@@ -45,6 +41,11 @@ void IconsBackend::setSelectedTheme(int selectedThemeIndex)
 
     QString line = locate->readLine();
     QString changeIconsCommand = line.remove("\n");
+
+    QProcess *blendEffectProcess = new QProcess(this->parent());
+    QStringList blendEffectArguments;
+    blendEffectArguments << "org.kde.KWin" << "/org/kde/KWin/BlendChanges" << "start" << "500";
+    blendEffectProcess->execute("qdbus-qt5",blendEffectArguments);
 
     QProcess *process = new QProcess(this->parent());
     QStringList arguments;
@@ -85,7 +86,7 @@ void IconsBackend::setIconsThemes(QVariantList iconsThemes)
     emit iconsThemesChanged(m_iconsThemes);
 }
 
-QStringList IconsBackend::GetPlasmaStylesFolderList(QString path) const
+QStringList IconsBackend::GetIconsThemesFolderList(QString path) const
 {
     QDir directory = QDir(path);
     QStringList folders = directory.entryList(QStringList() << "*", QDir::Dirs | QDir::NoDotAndDotDot);
@@ -104,8 +105,8 @@ void IconsBackend::getThemes()
 
     qDebug() << "Default icons theme: " << selectedTheme;
 
-    QStringList folderlist1 = GetPlasmaStylesFolderList(QDir::homePath()+"/.local/share/icons");
-    QStringList folderlist2 = GetPlasmaStylesFolderList("/usr/share/icons");
+    QStringList folderlist1 = GetIconsThemesFolderList(QDir::homePath()+"/.local/share/icons");
+    QStringList folderlist2 = GetIconsThemesFolderList("/usr/share/icons");
 
     // Leer la totalidad de iconos
 
@@ -119,10 +120,11 @@ void IconsBackend::getThemes()
         QFile file(indexTheme);
         QDir dir;
 
+        QString themePath = QDir::homePath() + "/.local/share/icons/" + folderlist1[i];
+        QDir directory = QDir(themePath);
+
         if (file.exists(indexTheme) && dir.exists(cursorsFolder)) {
 
-            QString themePath = QDir::homePath() + "/.local/share/icons/" + folderlist1[i];
-            QDir directory = QDir(themePath);
             QStringList files = directory.entryList(QStringList() << "*", QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
 
             if (files.count() == 2) {
@@ -132,9 +134,21 @@ void IconsBackend::getThemes()
             }
         }
 
+        QStringList files = directory.entryList(QStringList() << "*", QDir::Files);
+
+        if (files.count() == 0) {
+
+            // No hay nada. Interrumpe ejecución y continúa iteración de bucle for
+            continue;
+        }
+
         QVariantMap item;
 
-        item["name"] = folderlist1[i];
+        KConfig indexFile(indexTheme);
+        KConfigGroup desktopEntry = indexFile.group("Icon Theme");
+
+        item["name"] = desktopEntry.readEntry("Name", QString());
+        item["folderName"] = folderlist1[i];
         item["path"] = QDir::homePath() + "/.local/share/icons";
 
         if (folderlist1[i] == selectedTheme) {
@@ -158,6 +172,9 @@ void IconsBackend::getThemes()
         QFile file(indexTheme);
         QDir dir;
 
+        QString themePath = "/usr/share/icons/" + folderlist2[i];
+        QDir directory = QDir(themePath);
+
         if (file.exists(indexTheme) && dir.exists(cursorsFolder)) {
 
             QString themePath = "/usr/share/icons/" + folderlist2[i];
@@ -171,9 +188,21 @@ void IconsBackend::getThemes()
             }
         }
 
+        QStringList files = directory.entryList(QStringList() << "*", QDir::Files);
+
+        if (files.count() == 0) {
+
+            // No hay nada. Interrumpe ejecución y continúa iteración de bucle for
+            continue;
+        }
+
         QVariantMap item;
 
-        item["name"] = folderlist2[i];
+        KConfig indexFile(indexTheme);
+        KConfigGroup desktopEntry = indexFile.group("Icon Theme");
+
+        item["name"] = desktopEntry.readEntry("Name", QString());
+        item["folderName"] = folderlist2[i];
         item["path"] = "/usr/share/icons";
 
         if (folderlist2[i] == selectedTheme) {

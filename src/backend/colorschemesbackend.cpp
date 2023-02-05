@@ -78,8 +78,8 @@ void ColorSchemesBackend::setSelectedScheme(int selectedSchemeIndex)
 
     QProcess *blendEffectProcess = new QProcess(this->parent());
     QStringList blendEffectArguments;
-    blendEffectArguments << "call" << "--session" << "--dest=org.kde.KWin" << "--object-path=/org/kde/KWin/BlendChanges" << "--method=org.kde.KWin.BlendChanges.start" << "300";
-    blendEffectProcess->execute("gdbus",blendEffectArguments);
+    blendEffectArguments << "org.kde.KWin" << "/org/kde/KWin/BlendChanges" << "start" << "300";
+    blendEffectProcess->execute("qdbus-qt5",blendEffectArguments);
 
     QProcess *process = new QProcess(this->parent());
     QStringList arguments;

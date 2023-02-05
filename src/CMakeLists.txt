@@ -10,6 +10,7 @@ add_executable(kirigamisettings
     backend/wallpapersbackend.cpp
     backend/aboutsystembackend.cpp
     backend/iconsbackend.cpp
+    backend/cursorsbackend.cpp
     resources.qrc)
 
 target_link_libraries(kirigamisettings

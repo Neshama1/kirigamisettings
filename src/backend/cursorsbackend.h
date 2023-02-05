@@ -2,8 +2,8 @@
 // SPDX-FileCopyrightText: 2023 asterion <email>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#ifndef ICONSBACKEND_H
-#define ICONSBACKEND_H
+#ifndef CURSORSBACKEND_H
+#define CURSORSBACKEND_H
 
 #include <QObject>
 #include <QVariant>
@@ -19,12 +19,12 @@
 /**
  * @todo write docs
  */
-class IconsBackend : public QObject
+class CursorsBackend : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(int selectedTheme READ selectedTheme WRITE setSelectedTheme NOTIFY selectedThemeChanged)
+    Q_PROPERTY(QVariantList cursorsThemes READ cursorsThemes WRITE setCursorsThemes NOTIFY cursorsThemesChanged)
     Q_PROPERTY(int themesCount READ themesCount WRITE setThemesCount NOTIFY themesCountChanged)
-    Q_PROPERTY(QVariantList iconsThemes READ iconsThemes WRITE setIconsThemes NOTIFY iconsThemesChanged)
+    Q_PROPERTY(int selectedTheme READ selectedTheme WRITE setSelectedTheme NOTIFY selectedThemeChanged)
 
 public:
     Q_INVOKABLE void getThemes();
@@ -33,17 +33,17 @@ public:
     /**
      * Default constructor
      */
-    IconsBackend();
+    CursorsBackend();
 
     /**
      * Destructor
      */
-    ~IconsBackend();
+    ~CursorsBackend();
 
     /**
-     * @return the selectedTheme
+     * @return the cursorsThemes
      */
-    int selectedTheme() const;
+    QVariantList cursorsThemes() const;
 
     /**
      * @return the themesCount
@@ -51,17 +51,17 @@ public:
     int themesCount() const;
 
     /**
-     * @return the iconsThemes
+     * @return the selectedTheme
      */
-    QVariantList iconsThemes() const;
+    int selectedTheme() const;
 
 public Q_SLOTS:
     /**
-     * Sets the selectedTheme.
+     * Sets the cursorsThemes.
      *
-     * @param selectedTheme the new selectedTheme
+     * @param cursorsThemes the new cursorsThemes
      */
-    void setSelectedTheme(int selectedThemeIndex);
+    void setCursorsThemes(QVariantList cursorsThemes);
 
     /**
      * Sets the themesCount.
@@ -71,26 +71,25 @@ public Q_SLOTS:
     void setThemesCount(int themesCount);
 
     /**
-     * Sets the iconsThemes.
+     * Sets the selectedTheme.
      *
-     * @param iconsThemes the new iconsThemes
+     * @param selectedTheme the new selectedTheme
      */
-    void setIconsThemes(QVariantList iconsThemes);
+    void setSelectedTheme(int selectedTheme);
 
 Q_SIGNALS:
-    void selectedThemeChanged(int selectedThemeIndex);
+    void cursorsThemesChanged(QVariantList cursorsThemes);
 
     void themesCountChanged(int themesCount);
 
-    void iconsThemesChanged(QVariantList iconsThemes);
+    void selectedThemeChanged(int selectedTheme);
 
 private:
-    int m_selectedThemeIndex;
+    QVariantList m_cursorsThemes;
     int m_themesCount;
-    QVariantList m_iconsThemes;
+    int m_selectedTheme;
 
-
-    QStringList GetIconsThemesFolderList(QString path) const;
+    QStringList GetCursorsThemesFolderList(QString path) const;
 };
 
-#endif // ICONSBACKEND_H
+#endif // CURSORSBACKEND_H

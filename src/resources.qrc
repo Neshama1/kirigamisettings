@@ -11,6 +11,7 @@
         <file alias="PlasmaStylePage.qml">contents/ui/PlasmaStylePage.qml</file>
         <file alias="WallpapersPage.qml">contents/ui/WallpapersPage.qml</file>
         <file alias="IconsPage.qml">contents/ui/IconsPage.qml</file>
+        <file alias="CursorsPage.qml">contents/ui/CursorsPage.qml</file>
         <file alias="AboutSystemPage.qml">contents/ui/AboutSystemPage.qml</file>
         <file alias="FloatingActionButton.qml">contents/ui/FloatingActionButton.qml</file>
     </qresource>
