@@ -35,6 +35,11 @@ void PlasmaStyleBackend::setSelectedStyle(int selectedStyleIndex)
     plasmaStyle["selected"] = true;
     QString selectedStyle = plasmaStyle["folder"].toString();
 
+    QProcess *blendEffectProcess = new QProcess(this->parent());
+    QStringList blendEffectArguments;
+    blendEffectArguments << "org.kde.KWin" << "/org/kde/KWin/BlendChanges" << "start" << "1000";
+    blendEffectProcess->execute("qdbus-qt5",blendEffectArguments);
+
     QProcess *process = new QProcess(this->parent());
     QStringList arguments;
     arguments << selectedStyle;
