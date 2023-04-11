@@ -83,7 +83,7 @@ void WallpapersBackend::getThemes()
 
     // Obtener el fondo de pantalla seleccionado
     KConfig wallpaperConfigFile(QDir::homePath()+"/.config/plasma-org.kde.plasma.desktop-appletsrc");
-    KConfigGroup defaultWallpaperPlugin = wallpaperConfigFile.group("Containments").group("27").group("Wallpaper").group("org.kde.image").group("General");
+    KConfigGroup defaultWallpaperPlugin = wallpaperConfigFile.group("Containments").group("116").group("Wallpaper").group("org.kde.image").group("General");
     QString selectedWallpaper = defaultWallpaperPlugin.readEntry("Image", QString());
     selectedWallpaper.remove("file://");
 

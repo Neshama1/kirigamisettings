@@ -147,7 +147,7 @@ Kirigami.ScrollablePage {
                         delegate: Kirigami.Card {
                             id: card
 
-                            Layout.minimumHeight: 200
+                            Layout.minimumHeight: 100
                             Layout.maximumHeight: 400
 
                             property bool themeSel: selected
@@ -156,7 +156,7 @@ Kirigami.ScrollablePage {
                                 opacityAnimation.start()
 
                                 // Mutar para columnas adaptables
-                                grid.columns = 3
+                                grid.columns = 1
 
                                 formCardHeader.height = Layout.minimumHeight * (Math.ceil(IconsBackend.themesCount / (grid.width / 100)))
                                 iconsThemesPage.flickable.contentHeight = formCardGroup.height + Kirigami.Units.largeSpacing + 65
@@ -192,9 +192,10 @@ Kirigami.ScrollablePage {
 
                             Rectangle {
                                 id: banner
-                                anchors.horizontalCenter: card.horizontalCenter
-                                width: card.width - 2
-                                height: card.height / 2 - 1
+                                //anchors.horizontalCenter: card.horizontalCenter
+                                width: card.height - 2
+                                height: card.height - 2
+                                x: 1
                                 y: 1
                                 color: Kirigami.Theme.backgroundColor
                                 opacity: 0
@@ -229,8 +230,8 @@ Kirigami.ScrollablePage {
                             }
 
                             Controls.Label {
-                                anchors.top: banner.bottom
-                                width: parent.width
+                                anchors.left: banner.right
+                                width: card.width - banner.width
                                 padding: Kirigami.Units.largeSpacing
                                 font.pointSize: 16
                                 elide: Text.ElideRight
@@ -276,7 +277,7 @@ Kirigami.ScrollablePage {
                             MouseArea {
                                 id: mouse
                                 anchors.fill: parent
-                                anchors.bottomMargin: 40
+                                //anchors.bottomMargin: 40
                                 hoverEnabled: true
 
                                 onClicked: {
