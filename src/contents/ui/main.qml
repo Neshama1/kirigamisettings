@@ -89,6 +89,11 @@ Kirigami.ApplicationWindow {
                 description: "Shows details about your PC"
                 iconItem: "preferences-desktop"
             }
+            ListElement {
+                name: "Network"
+                description: "Lists your network connections"
+                iconItem: "network-wireless-connected-25.svg"
+            }
         }
 
         // List view: homeModel (data model or input data) + Kirigami.SwipeListItem delegate (QML component or visual form of data presentation)
@@ -202,6 +207,10 @@ Kirigami.ApplicationWindow {
                                         pageStack.push("qrc:/AboutSystemPage.qml")
                                         return
                                     }
+                                    case 2: {
+                                        pageStack.push("qrc:/NetworkPage.qml")
+                                        return
+                                    }
                                 }
                             }
                         }
@@ -217,7 +226,7 @@ Kirigami.ApplicationWindow {
                             switch (index) {
                                 case 0: { visible = true ; return }
                                 case 1: { visible = false ; return }
-                                case 2: { visible = true ; return }
+                                case 2: { visible = false ; return }
                             }
                         }
                         icon.name: "go-next"
