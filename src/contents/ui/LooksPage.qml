@@ -62,17 +62,17 @@ Kirigami.ScrollablePage {
 
         // Elements list
 
-        delegate: Kirigami.SwipeListItem {
+        delegate: Kirigami.BasicListItem {
             id: delegateItem
 
-            height: 55 // 45
+            height: 60 // 45
 
             background: Rectangle {
                 anchors.fill: parent
 
-                Kirigami.Theme.colorSet: Kirigami.Theme.View
-                Kirigami.Theme.inherit: false
-                color: hovered ? Kirigami.Theme.hoverColor : Kirigami.Theme.backgroundColor
+                Kirigami.Theme.colorSet: Kirigami.Theme.Window
+                //Kirigami.Theme.inherit: false
+                color: hovered ? Kirigami.Theme.alternateBackgroundColor : Kirigami.Theme.backgroundColor
             }
 
             RowLayout {

@@ -134,8 +134,8 @@ Kirigami.ScrollablePage {
                     anchors.fill: parent
 
                     columns: width / 100
-                    rowSpacing: 7
-                    columnSpacing: 7
+                    rowSpacing: 9
+                    columnSpacing: 9
 
                     anchors.topMargin: Kirigami.Units.largeSpacing
 

@@ -107,7 +107,7 @@ Kirigami.ScrollablePage {
 
                         background: Rectangle {
                             anchors.fill: parent
-                            color: hovered ? Kirigami.Theme.hoverColor : Kirigami.Theme.backgroundColor
+                            color: hovered ? Kirigami.Theme.alternateBackgroundColor : Kirigami.Theme.backgroundColor
                         }
 
                         text: Name

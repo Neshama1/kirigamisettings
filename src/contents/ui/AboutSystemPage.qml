@@ -10,7 +10,7 @@ import org.kde.KirigamiSettings 1.0
 import org.kde.kirigamiaddons.labs.mobileform 0.1 as MobileForm
 
 Kirigami.ScrollablePage {
-    id: generalBehaviorPage
+    id: aboutSystemPage
     title: i18n("Settings")
 
     Component.onCompleted: {
@@ -20,7 +20,7 @@ Kirigami.ScrollablePage {
 
     PropertyAnimation {
         id: opacityAnimation
-        target: generalBehaviorPage
+        target: aboutSystemPage
         properties: "opacity"
         from: 0.0
         to: 1.0
@@ -29,7 +29,7 @@ Kirigami.ScrollablePage {
 
     PropertyAnimation {
         id: yAnimation
-        target: generalBehaviorPage
+        target: aboutSystemPage
         properties: "y"
         from: -5
         to: 0
@@ -46,7 +46,7 @@ Kirigami.ScrollablePage {
 
     ColumnLayout {
         spacing: 0
-        width: generalBehaviorPage.width
+        width: aboutSystemPage.width
 
         MobileForm.FormCard {
             Layout.fillWidth: true
