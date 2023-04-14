@@ -229,15 +229,50 @@ Kirigami.ScrollablePage {
                                 }
                             }
 
-                            Controls.Label {
+                            // Informative chip
+
+                            Kirigami.Chip {
+                                id: bannerChip
                                 anchors.left: banner.right
-                                width: card.width - banner.width
-                                padding: Kirigami.Units.largeSpacing
-                                font.pointSize: 16
-                                elide: Text.ElideRight
-                                wrapMode: Text.WordWrap
-                                maximumLineCount: 1
+                                anchors.top: card.top
+                                anchors.margins: 7
+                                width: 120
+                                height: 30
+                                opacity: 0.8
+                                closable: false
+
                                 text: name
+                                icon.name: "tag-symbolic"
+                            }
+
+                            PropertyAnimation {
+                                id: chipOpacityOnStartAnimation
+                                target: bannerChip
+                                properties: "opacity"
+                                from: 0.0
+                                to: bannerChip.opacity
+                                duration: 1000
+                                easing.type: Easing.OutExpo
+                            }
+
+                            PropertyAnimation {
+                                id: chipOpacityUpAnimation
+                                target: bannerChip
+                                properties: "opacity"
+                                from: 0.8
+                                to: 1.0
+                                duration: 1000
+                                easing.type: Easing.OutExpo
+                            }
+
+                            PropertyAnimation {
+                                id: chipOpacityDownAnimation
+                                target: bannerChip
+                                properties: "opacity"
+                                from: 1.0
+                                to: 0.8
+                                duration: 1000
+                                easing.type: Easing.OutExpo
                             }
 
                             // Selection icon rectangle (icon background)
@@ -287,6 +322,13 @@ Kirigami.ScrollablePage {
                                     }
                                     iconsModel.setProperty(index, "selected", true)
                                     IconsBackend.setSelectedTheme(index)
+                                }
+
+                                onEntered: {
+                                    chipOpacityUpAnimation.start()
+                                }
+                                onExited: {
+                                    chipOpacityDownAnimation.start()
                                 }
                             }
                         }

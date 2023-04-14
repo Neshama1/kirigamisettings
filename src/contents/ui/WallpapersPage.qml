@@ -154,8 +154,6 @@ Kirigami.ScrollablePage {
                             property bool paperSel: selected
 
                             Component.onCompleted: {
-                                opacityAnimation.start()
-
                                 // Mutar para columnas adaptables
                                 grid.columns = 1
 
@@ -178,15 +176,6 @@ Kirigami.ScrollablePage {
                                 }
                             }
 
-                            PropertyAnimation {
-                                id: opacityAnimation
-                                target: card
-                                properties: "opacity"
-                                from: 0.0
-                                to: 1
-                                duration: 800
-                            }
-
                             // Wallpaper
 
                             Image {
@@ -196,13 +185,14 @@ Kirigami.ScrollablePage {
                                 height: card.height
                                 source: Qt.resolvedUrl("file://" + paperUrl)
                                 asynchronous: true
-                                opacity: 0
+                                fillMode: Image.PreserveAspectCrop
 
                                 Connections {
                                     target: banner
                                     onStatusChanged: {
                                         if (banner.status == Image.Ready) {
                                             bannerOpacityAnimation.start()
+                                            chipOpacityOnStartAnimation.start()
                                         }
                                     }
                                 }
@@ -212,8 +202,28 @@ Kirigami.ScrollablePage {
                                     target: banner
                                     properties: "opacity"
                                     from: 0.0
-                                    to: 1.0
-                                    duration: 2500
+                                    to: 0.15
+                                    duration: 1000
+                                    easing.type: Easing.OutExpo
+                                }
+
+                                PropertyAnimation {
+                                    id: bannerOpacityUpAnimation
+                                    target: banner
+                                    properties: "opacity"
+                                    from: 0.15
+                                    to: 1
+                                    duration: 1000
+                                    easing.type: Easing.OutExpo
+                                }
+
+                                PropertyAnimation {
+                                    id: bannerOpacityDownAnimation
+                                    target: banner
+                                    properties: "opacity"
+                                    from: 1.0
+                                    to: 0.15
+                                    duration: 1000
                                     easing.type: Easing.InExpo
                                 }
 
@@ -232,15 +242,50 @@ Kirigami.ScrollablePage {
                                 }
                             }
 
-                            Controls.Label {
+                            // Informative chip
+
+                            Kirigami.Chip {
+                                id: bannerChip
                                 anchors.left: banner.right
-                                width: card.width - banner.width
-                                padding: Kirigami.Units.largeSpacing
-                                font.pointSize: 16
-                                elide: Text.ElideRight
-                                wrapMode: Text.WordWrap
-                                maximumLineCount: 1
+                                anchors.top: card.top
+                                anchors.margins: 7
+                                width: 120
+                                height: 30
+                                opacity: 0.9
+                                closable: false
+
                                 text: name
+                                icon.name: "tag-symbolic"
+                            }
+
+                            PropertyAnimation {
+                                id: chipOpacityOnStartAnimation
+                                target: bannerChip
+                                properties: "opacity"
+                                from: 0.0
+                                to: bannerChip.opacity
+                                duration: 1000
+                                easing.type: Easing.OutExpo
+                            }
+
+                            PropertyAnimation {
+                                id: chipOpacityUpAnimation
+                                target: bannerChip
+                                properties: "opacity"
+                                from: 0.9
+                                to: 1.0
+                                duration: 1000
+                                easing.type: Easing.OutExpo
+                            }
+
+                            PropertyAnimation {
+                                id: chipOpacityDownAnimation
+                                target: bannerChip
+                                properties: "opacity"
+                                from: 1.0
+                                to: 0.9
+                                duration: 1000
+                                easing.type: Easing.OutExpo
                             }
 
                             // Selection icon rectangle (icon background)
@@ -288,6 +333,15 @@ Kirigami.ScrollablePage {
                                     }
                                     wallpapersModel.setProperty(index, "selected", true)
                                     WallpapersBackend.setSelectedWallpaper(index)
+                                }
+
+                                onEntered: {
+                                    bannerOpacityUpAnimation.start()
+                                    chipOpacityUpAnimation.start()
+                                }
+                                onExited: {
+                                    bannerOpacityDownAnimation.start()
+                                    chipOpacityDownAnimation.start()
                                 }
                             }
                         }
