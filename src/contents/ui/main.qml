@@ -120,6 +120,15 @@ Kirigami.ApplicationWindow {
                     closePages()
                     pageStack.push("qrc:/NetworkPage.qml")
                 }
+            },
+            Kirigami.Action {
+                text: "Sounds"
+                icon.name: "folder-sound"
+                displayHint: Kirigami.DisplayHint.KeepVisible
+                onTriggered: {
+                    closePages()
+                    pageStack.push("qrc:/SoundPage.qml")
+                }
             }
         ]
     }

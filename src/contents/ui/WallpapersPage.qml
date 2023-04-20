@@ -100,248 +100,361 @@ Kirigami.ScrollablePage {
         }
     }
 
-    // Cards
+    ColumnLayout {
 
-    MobileForm.FormCard {
-        id: formCardGroup
-        Layout.fillWidth: true
-        Layout.leftMargin: Kirigami.Units.largeSpacing
-        Layout.topMargin: Kirigami.Units.largeSpacing
+        // Wallpaper (selected)
 
-        contentItem: ColumnLayout {
+        MobileForm.FormCard {
+            id: formSelected
 
-            // spacing: 0
+            Layout.fillWidth: true
+            Layout.bottomMargin: Kirigami.Units.largeSpacing
 
-            MobileForm.FormCardHeader {
-                title: i18n("Wallpapers")
-            }
+            contentItem: ColumnLayout {
 
-            MobileForm.FormTextDelegate {
-                text: i18n("Personalize your background")
-            }
+                // spacing: 0
 
-            MobileForm.FormCardHeader {
-                id: formCardHeader
+                MobileForm.FormCardHeader {
+                    title: i18n("Selected")
+                }
 
-                visible: true
+                MobileForm.FormTextDelegate {
 
-                Layout.leftMargin: Kirigami.Units.largeSpacing
-                Layout.rightMargin: Kirigami.Units.largeSpacing
-                Layout.bottomMargin: Kirigami.Units.largeSpacing * 2
+                    id: formTextSelected
 
-                GridLayout {
-                    id: grid
-                    anchors.fill: parent
+                    Layout.minimumHeight: 110
+                    Layout.maximumHeight: 110
 
-                    columns: width / 100
-                    rowSpacing: 7
-                    columnSpacing: 7
+                    // Image
 
-                    anchors.topMargin: Kirigami.Units.largeSpacing
+                    Rectangle {
+                        id: selectedBanner
+                        anchors.left: selectedName.left
+                        anchors.right: selectedName.right
+                        anchors.top: formTextSelected.top
+                        anchors.bottom: selectedName.bottom
+                        anchors.topMargin: selectedName.anchors.margins - 4
+                        anchors.bottomMargin: selectedName.anchors.margins
+                        radius: 4
+                        property color dColor: Kirigami.Theme.disabledTextColor
+                        border.color: Qt.rgba(dColor.r,dColor.g,dColor.b,0.8)
+                        border.width: 1
 
-                    Repeater {
-                        id: cardRepeater
+                        Image {
+                            id: selectedImage
 
-                        model: wallpapersModel
+                            anchors.fill: parent
+                            asynchronous: true
+                            fillMode: Image.PreserveAspectCrop
 
-                        delegate: Kirigami.Card {
-                            id: card
-
-                            Layout.minimumHeight: 100
-                            Layout.maximumHeight: 400
-
-                            property bool cardHovered: false
-                            property bool paperSel: selected
-
-                            Component.onCompleted: {
-                                // Mutar para columnas adaptables
-                                grid.columns = 1
-
-                                formCardHeader.height = Layout.minimumHeight * (Math.ceil(WallpapersBackend.stylesCount / (grid.width / 100)))
-                                wallpapersPage.flickable.contentHeight = formCardGroup.height + Kirigami.Units.largeSpacing + 65
-                                wallpapersPage.flickable.width = wallpapersPage.width
-                            }
-
-                            Connections {
-                                target: formCardHeader
-                                onWidthChanged: {
-                                    formCardHeader.height = Layout.minimumHeight * (Math.ceil(WallpapersBackend.stylesCount / grid.columns))
-                                    wallpapersPage.flickable.contentHeight = formCardGroup.height + Kirigami.Units.largeSpacing + 65
-                                    wallpapersPage.flickable.width = wallpapersPage.width
-                                }
-                                onHeightChanged: {
-                                    formCardHeader.height = Layout.minimumHeight * (Math.ceil(WallpapersBackend.stylesCount / grid.columns))
-                                    wallpapersPage.flickable.contentHeight = formCardGroup.height + Kirigami.Units.largeSpacing + 65
-                                    wallpapersPage.flickable.width = wallpapersPage.width
+                            layer.enabled: true
+                            layer.effect: OpacityMask {
+                                maskSource: Item {
+                                    width: selectedImage.width
+                                    height: selectedImage.height
+                                    Rectangle {
+                                        anchors.centerIn: parent
+                                        width: selectedImage.width
+                                        height: selectedImage.height
+                                        radius: 4
+                                    }
                                 }
                             }
+                        }
 
-                            // Wallpaper
+                        Component.onCompleted: {
+                            bannerSelectedOpacityAnimation.start()
+                        }
 
-                            Image {
-                                id: banner
-                                //anchors.fill: parent
-                                width: card.height
-                                height: card.height
-                                source: Qt.resolvedUrl("file://" + paperUrl)
-                                asynchronous: true
-                                fillMode: Image.PreserveAspectCrop
+                        PropertyAnimation {
+                            id: bannerSelectedOpacityAnimation
+                            target: selectedBanner
+                            properties: "opacity"
+                            from: 0.0
+                            to: 0.8
+                            duration: 750
+                            easing.type: Easing.InExpo
+                        }
+                    }
+
+                    // Name
+
+                    Rectangle {
+                        id: selectedName
+
+                        anchors.left: formTextSelected.left
+                        anchors.bottom: formTextSelected.bottom
+                        anchors.margins: Kirigami.Units.smallSpacing * 3
+                        width: 90
+                        height: 30
+                        opacity: 1.0
+                        radius: 4
+                        property color dColor: Kirigami.Theme.disabledTextColor
+                        border.color: Qt.rgba(dColor.r,dColor.g,dColor.b,0.8)
+                        border.width: 1
+                        color: Kirigami.Theme.backgroundColor
+
+                        Controls.Label {
+                            id: selectedLabel
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.verticalCenterOffset: -2
+                            anchors.left:parent.left
+                            anchors.right: parent.right
+                            anchors.leftMargin: Kirigami.Units.smallSpacing
+                            anchors.rightMargin: Kirigami.Units.smallSpacing
+
+                            elide: Qt.ElideRight
+                            wrapMode: Qt.WordWrap
+                            color: Kirigami.Theme.textColor
+                        }
+                    }
+                }
+            }
+        }
+
+        // Wallpapers (all)
+
+        MobileForm.FormCard {
+            id: formCardGroup
+            Layout.fillWidth: true
+            Layout.bottomMargin: Kirigami.Units.largeSpacing
+
+            contentItem: ColumnLayout {
+
+                // spacing: 0
+
+                MobileForm.FormCardHeader {
+                    title: i18n("Wallpapers")
+                }
+
+                MobileForm.FormTextDelegate {
+                    text: i18n("Personalize your background")
+                }
+
+                MobileForm.FormCardHeader {
+                    id: formCardHeader
+
+                    visible: true
+
+                    Layout.leftMargin: Kirigami.Units.largeSpacing
+                    Layout.rightMargin: Kirigami.Units.largeSpacing
+                    Layout.bottomMargin: Kirigami.Units.largeSpacing * 2
+
+                    GridLayout {
+                        id: grid
+                        anchors.fill: parent
+
+                        columns: width / 100
+                        rowSpacing: 5
+                        columnSpacing: 0
+
+                        anchors.topMargin: Kirigami.Units.largeSpacing
+
+                        Repeater {
+                            id: cardRepeater
+
+                            model: wallpapersModel
+
+                            delegate: Kirigami.Card {
+                                id: card
+
+                                Layout.minimumHeight: 110
+                                Layout.maximumHeight: 400
+
+                                property bool cardHovered: false
+                                property bool themeSel: selected
+                                property string wallpaperName: name
+
+                                background: Rectangle {
+                                    anchors.fill: parent
+                                    opacity: 0
+                                }
+
+                                Component.onCompleted: {
+                                    opacityAnimation.start()
+
+                                    // Mutar para columnas adaptables
+                                    // grid.columns = 5
+
+                                    formCardGroup.height = Layout.minimumHeight * (Math.ceil(WallpapersBackend.wallpapers / (grid.width / 100)))
+                                    wallpapersPage.flickable.contentHeight = formCardGroup.height + Kirigami.Units.largeSpacing
+                                    wallpapersPage.flickable.width = wallpapersPage.width
+
+                                    selectedLabel.text = wallpapersModel.get(WallpapersBackend.selectedWallpaper).name
+                                    formTextSelected.height = 100
+                                    selectedImage.source = Qt.resolvedUrl("file://" + wallpapersModel.get(WallpapersBackend.selectedWallpaper).paperUrl)
+                                }
 
                                 Connections {
-                                    target: banner
-                                    onStatusChanged: {
-                                        if (banner.status == Image.Ready) {
-                                            bannerOpacityAnimation.start()
-                                            chipOpacityOnStartAnimation.start()
-                                        }
+                                    target: formCardHeader
+                                    onWidthChanged: {
+                                        formCardHeader.height = Layout.minimumHeight * (Math.ceil(WallpapersBackend.filesCount / grid.columns))
+                                        wallpapersPage.flickable.contentHeight = formCardGroup.height + Kirigami.Units.largeSpacing * 3 + 65 + formSelected.height
+                                        wallpapersPage.flickable.width = wallpapersPage.width
+                                    }
+                                    onHeightChanged: {
+                                        formCardHeader.height = Layout.minimumHeight * (Math.ceil(WallpapersBackend.filesCount / grid.columns))
+                                        wallpapersPage.flickable.contentHeight = formCardGroup.height + Kirigami.Units.largeSpacing * 3 + 65 + formSelected.height
+                                        wallpapersPage.flickable.width = wallpapersPage.width
                                     }
                                 }
 
+                                // Card animations
+
                                 PropertyAnimation {
-                                    id: bannerOpacityAnimation
-                                    target: banner
+                                    id: opacityAnimation
+                                    target: card
                                     properties: "opacity"
                                     from: 0.0
-                                    to: 0.15
-                                    duration: 1000
-                                    easing.type: Easing.OutExpo
-                                }
-
-                                PropertyAnimation {
-                                    id: bannerOpacityUpAnimation
-                                    target: banner
-                                    properties: "opacity"
-                                    from: 0.15
                                     to: 1
-                                    duration: 1000
-                                    easing.type: Easing.OutExpo
+                                    duration: 800
                                 }
 
-                                PropertyAnimation {
-                                    id: bannerOpacityDownAnimation
-                                    target: banner
-                                    properties: "opacity"
-                                    from: 1.0
-                                    to: 0.15
-                                    duration: 1000
-                                    easing.type: Easing.InExpo
-                                }
+                                // Image
 
-                                layer.enabled: true
-                                layer.effect: OpacityMask {
-                                    maskSource: Item {
-                                        width: banner.width
-                                        height: banner.height
-                                        Rectangle {
-                                            anchors.centerIn: parent
-                                            width: banner.width
-                                            height: banner.height
-                                            radius: 4
+                                Rectangle {
+                                    id: banner
+                                    anchors.left: nameRect.left
+                                    anchors.right: nameRect.right
+                                    anchors.top: card.top
+                                    anchors.bottom: card.bottom
+                                    anchors.topMargin: nameRect.anchors.margins
+                                    anchors.bottomMargin: nameRect.anchors.margins
+                                    radius: 4
+                                    border.width: 1
+                                    property color dColor: Kirigami.Theme.disabledTextColor
+                                    border.color: Qt.rgba(dColor.r,dColor.g,dColor.b,0.8)
+
+                                    Image {
+                                        id: wallpaperImage
+
+                                        anchors.fill: parent
+                                        asynchronous: true
+                                        fillMode: Image.PreserveAspectCrop
+                                        source: Qt.resolvedUrl("file://" + paperUrl)
+
+                                        layer.enabled: true
+                                        layer.effect: OpacityMask {
+                                            maskSource: Item {
+                                                width: wallpaperImage.width
+                                                height: wallpaperImage.height
+                                                Rectangle {
+                                                    anchors.centerIn: parent
+                                                    width: wallpaperImage.width
+                                                    height: wallpaperImage.height
+                                                    radius: 4
+                                                }
+                                            }
                                         }
                                     }
-                                }
-                            }
 
-                            // Informative chip
-
-                            Kirigami.Chip {
-                                id: bannerChip
-                                anchors.left: banner.right
-                                anchors.top: card.top
-                                anchors.margins: 7
-                                width: 120
-                                height: 30
-                                opacity: 0.9
-                                closable: false
-
-                                text: name
-                                icon.name: "tag-symbolic"
-                            }
-
-                            PropertyAnimation {
-                                id: chipOpacityOnStartAnimation
-                                target: bannerChip
-                                properties: "opacity"
-                                from: 0.0
-                                to: bannerChip.opacity
-                                duration: 1000
-                                easing.type: Easing.OutExpo
-                            }
-
-                            PropertyAnimation {
-                                id: chipOpacityUpAnimation
-                                target: bannerChip
-                                properties: "opacity"
-                                from: 0.9
-                                to: 1.0
-                                duration: 1000
-                                easing.type: Easing.OutExpo
-                            }
-
-                            PropertyAnimation {
-                                id: chipOpacityDownAnimation
-                                target: bannerChip
-                                properties: "opacity"
-                                from: 1.0
-                                to: 0.9
-                                duration: 1000
-                                easing.type: Easing.OutExpo
-                            }
-
-                            // Selection icon rectangle (icon background)
-
-                            Rectangle {
-                                id: selectIconRect
-                                implicitWidth: Kirigami.Units.iconSizes.medium
-                                implicitHeight: Kirigami.Units.iconSizes.medium
-                                anchors.bottom: card.bottom
-                                anchors.right: card.right
-                                anchors.margins: 8
-                                scale: 1.2
-                                radius: width
-                                Kirigami.Theme.colorSet: Kirigami.Theme.View
-                                Kirigami.Theme.inherit: false
-                                color: Kirigami.Theme.disabledTextColor
-                                opacity: 0.1
-                                visible: paperSel ? true : false
-                            }
-
-                            // Selection icon
-
-                            Kirigami.Icon {
-                                anchors.centerIn: selectIconRect
-                                implicitWidth: Kirigami.Units.iconSizes.small
-                                implicitHeight: Kirigami.Units.iconSizes.small
-                                Kirigami.Theme.colorSet: Kirigami.Theme.View
-                                Kirigami.Theme.inherit: false
-                                color: Kirigami.Theme.textColor
-                                opacity: 0.7
-                                visible: paperSel ? true : false
-                                source: "emblem-ok-symbolic"
-                            }
-
-                            MouseArea {
-                                id: mouse
-                                anchors.fill: card
-                                //anchors.bottomMargin: 40
-                                hoverEnabled: true
-
-                                onClicked: {
-                                    var fcount = WallpapersBackend.filesCount
-                                    for (var i = 0 ; i < fcount ; i++) {
-                                        wallpapersModel.setProperty(i, "selected", false)
+                                    Component.onCompleted: {
+                                        bannerOpacityAnimation.start()
                                     }
-                                    wallpapersModel.setProperty(index, "selected", true)
-                                    WallpapersBackend.setSelectedWallpaper(index)
+
+                                    PropertyAnimation {
+                                        id: bannerOpacityAnimation
+                                        target: banner
+                                        properties: "opacity"
+                                        from: 0.0
+                                        to: 0.6
+                                        duration: 750
+                                        easing.type: Easing.InExpo
+                                    }
                                 }
 
-                                onEntered: {
-                                    bannerOpacityUpAnimation.start()
-                                    chipOpacityUpAnimation.start()
+                                // Name
+
+                                Rectangle {
+
+                                    id: nameRect
+
+                                    anchors.left: card.left
+
+                                    anchors.bottom: card.bottom
+                                    anchors.margins: 7
+                                    width: 90
+                                    height: 30
+                                    opacity: 1.0
+                                    radius: 4
+                                    Kirigami.Theme.colorSet: Kirigami.Theme.Window
+                                    property color dColor: Kirigami.Theme.disabledTextColor
+                                    border.width: 1
+                                    border.color: Qt.rgba(dColor.r,dColor.g,dColor.b,0.8)
+
+                                    color: Kirigami.Theme.backgroundColor
+
+                                    Controls.Label {
+                                        id: nameLabel
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        anchors.verticalCenterOffset: -2
+                                        anchors.left:parent.left
+                                        anchors.right: parent.right
+                                        anchors.leftMargin: Kirigami.Units.smallSpacing
+                                        anchors.rightMargin: Kirigami.Units.smallSpacing
+
+                                        text: name
+                                        elide: Qt.ElideRight
+                                        wrapMode: Qt.WordWrap
+                                        color: Kirigami.Theme.textColor
+                                    }
                                 }
-                                onExited: {
-                                    bannerOpacityDownAnimation.start()
-                                    chipOpacityDownAnimation.start()
+
+                                // Selection icon (circle)
+
+                                Rectangle {
+                                    id: selectIconRect
+                                    implicitWidth: Kirigami.Units.iconSizes.medium
+                                    implicitHeight: Kirigami.Units.iconSizes.medium
+                                    anchors.centerIn: banner
+                                    anchors.verticalCenterOffset: 0 - nameRect.height / 2
+                                    scale: 1.2
+                                    radius: width
+                                    Kirigami.Theme.colorSet: Kirigami.Theme.View
+                                    Kirigami.Theme.inherit: false
+                                    color: Kirigami.Theme.disabledTextColor
+                                    opacity: 0.1
+                                    visible: themeSel ? true : false
+                                }
+
+                                // Selection icon (icon)
+
+                                Kirigami.Icon {
+                                    anchors.centerIn: selectIconRect
+                                    implicitWidth: Kirigami.Units.iconSizes.small
+                                    implicitHeight: Kirigami.Units.iconSizes.small
+                                    Kirigami.Theme.colorSet: Kirigami.Theme.View
+                                    Kirigami.Theme.inherit: false
+                                    color: Kirigami.Theme.textColor
+                                    opacity: 0.7
+                                    visible: themeSel ? true : false
+                                    source: "emblem-ok-symbolic"
+                                }
+
+                                // Mouse handling
+
+                                MouseArea {
+                                    id: mouse
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+
+                                    onClicked: {
+                                        var fcount = WallpapersBackend.filesCount
+                                        for (var i = 0 ; i < fcount ; i++) {
+                                            wallpapersModel.setProperty(i, "selected", false)
+                                        }
+                                        wallpapersModel.setProperty(index, "selected", true)
+                                        WallpapersBackend.setSelectedWallpaper(index)
+                                        selectedLabel.text = wallpapersModel.get(WallpapersBackend.selectedWallpaper).name
+                                        selectedImage.source = Qt.resolvedUrl("file://" + wallpapersModel.get(WallpapersBackend.selectedWallpaper).paperUrl)
+                                    }
+
+                                    onEntered: {
+                                        //
+                                    }
+                                    onExited: {
+                                        //
+                                    }
                                 }
                             }
                         }

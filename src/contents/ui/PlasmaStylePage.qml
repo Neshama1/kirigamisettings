@@ -16,8 +16,6 @@ Kirigami.ScrollablePage {
     title: "Plasma Style"
     verticalScrollBarPolicy: Controls.ScrollBar.AlwaysOn
 
-    // Page background color
-
     Component.onCompleted: {
         getPlasmaStyles()
         opacityAnimation.start()
@@ -58,7 +56,7 @@ Kirigami.ScrollablePage {
 
     PropertyAnimation {
         id: opacityAnimation
-        target: PlasmaStylesPage
+        target: plasmaStylesPage
         properties: "opacity"
         from: 0.0
         to: 1.0
@@ -67,7 +65,7 @@ Kirigami.ScrollablePage {
 
     PropertyAnimation {
         id: yAnimation
-        target: PlasmaStylesPage
+        target: plasmaStylesPage
         properties: "y"
         from: -10
         to: 0
@@ -100,236 +98,318 @@ Kirigami.ScrollablePage {
         }
     }
 
-    // Cards
+    ColumnLayout {
 
-    MobileForm.FormCard {
-        id: formCardGroup
-        Layout.fillWidth: true
-        Layout.leftMargin: Kirigami.Units.largeSpacing
-        Layout.topMargin: Kirigami.Units.largeSpacing
+        // Plasma style (selected)
 
-        contentItem: ColumnLayout {
+        MobileForm.FormCard {
+            id: formSelected
 
-            // spacing: 0
+            Layout.fillWidth: true
+            Layout.bottomMargin: Kirigami.Units.largeSpacing
 
-            MobileForm.FormCardHeader {
-                title: i18n("Plasma styles")
+            contentItem: ColumnLayout {
+
+                // spacing: 0
+
+                MobileForm.FormCardHeader {
+                    title: i18n("Selected")
+                }
+
+                MobileForm.FormTextDelegate {
+
+                    id: formTextSelected
+
+                    Layout.minimumHeight: 110
+                    Layout.maximumHeight: 110
+
+                    // Color
+
+                    Rectangle {
+                        id: selectedBanner
+                        anchors.left: selectedName.left
+                        anchors.right: selectedName.right
+                        anchors.top: formTextSelected.top
+                        anchors.bottom: selectedName.bottom
+                        anchors.topMargin: selectedName.anchors.margins - 4
+                        anchors.bottomMargin: selectedName.anchors.margins
+                        radius: 4
+                        property color dColor: Kirigami.Theme.disabledTextColor
+                        border.color: Qt.rgba(dColor.r,dColor.g,dColor.b,0.8)
+                        border.width: 1
+
+                        Component.onCompleted: {
+                            bannerSelectedOpacityAnimation.start()
+                        }
+
+                        PropertyAnimation {
+                            id: bannerSelectedOpacityAnimation
+                            target: selectedBanner
+                            properties: "opacity"
+                            from: 0.0
+                            to: 0.8
+                            duration: 750
+                            easing.type: Easing.InExpo
+                        }
+                    }
+
+                    // Plasma style name
+
+                    Rectangle {
+                        id: selectedName
+
+                        anchors.left: formTextSelected.left
+                        anchors.bottom: formTextSelected.bottom
+                        anchors.margins: Kirigami.Units.smallSpacing * 3
+                        width: 90
+                        height: 30
+                        opacity: 1.0
+                        radius: 4
+                        property color dColor: Kirigami.Theme.disabledTextColor
+                        border.color: Qt.rgba(dColor.r,dColor.g,dColor.b,0.8)
+                        border.width: 1
+                        color: Kirigami.Theme.backgroundColor
+
+                        Controls.Label {
+                            id: selectedLabel
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.verticalCenterOffset: -2
+                            anchors.left:parent.left
+                            anchors.right: parent.right
+                            anchors.leftMargin: Kirigami.Units.smallSpacing
+                            anchors.rightMargin: Kirigami.Units.smallSpacing
+
+                            elide: Qt.ElideRight
+                            wrapMode: Qt.WordWrap
+                            color: Kirigami.Theme.textColor
+                        }
+                    }
+                }
             }
+        }
 
-            MobileForm.FormTextDelegate {
-                text: i18n("Personalize your style")
-            }
+        // Plasma styles (all)
 
-            MobileForm.FormCardHeader {
-                id: formCardHeader
+        MobileForm.FormCard {
+            id: formCardGroup
+            Layout.fillWidth: true
+            Layout.bottomMargin: Kirigami.Units.largeSpacing
 
-                visible: true
+            contentItem: ColumnLayout {
 
-                Layout.leftMargin: Kirigami.Units.largeSpacing
-                Layout.rightMargin: Kirigami.Units.largeSpacing
-                Layout.bottomMargin: Kirigami.Units.largeSpacing * 2
+                // spacing: 0
 
-                GridLayout {
-                    id: grid
-                    anchors.fill: parent
+                MobileForm.FormCardHeader {
+                    title: i18n("Plasma style")
+                }
 
-                    columns: width / 100
-                    rowSpacing: 7
-                    columnSpacing: 7
+                MobileForm.FormTextDelegate {
+                    text: i18n("Personalize your style")
+                }
 
-                    anchors.topMargin: Kirigami.Units.largeSpacing
+                MobileForm.FormCardHeader {
+                    id: formCardHeader
 
-                    Repeater {
-                        id: cardRepeater
+                    visible: true
 
-                        model: plasmaStyleModel
+                    Layout.leftMargin: Kirigami.Units.largeSpacing
+                    Layout.rightMargin: Kirigami.Units.largeSpacing
+                    Layout.bottomMargin: Kirigami.Units.largeSpacing * 2
 
-                        delegate: Kirigami.Card {
-                            id: card
+                    GridLayout {
+                        id: grid
+                        anchors.fill: parent
 
-                            Layout.minimumHeight: 100
-                            Layout.maximumHeight: 400
+                        columns: width / 100
+                        rowSpacing: 5
+                        columnSpacing: 0
 
-                            property bool cardHovered: false
-                            property bool styleSel: selected
+                        anchors.topMargin: Kirigami.Units.largeSpacing
 
-                            Component.onCompleted: {
-                                opacityAnimation.start()
+                        Repeater {
+                            id: cardRepeater
 
-                                // Mutar para columnas adaptables
-                                grid.columns = 1
+                            model: plasmaStyleModel
 
-                                formCardHeader.height = Layout.minimumHeight * (Math.ceil(PlasmaStyleBackend.stylesCount / (grid.width / 100)))
-                                plasmaStylesPage.flickable.contentHeight = formCardGroup.height + Kirigami.Units.largeSpacing + 65
-                                plasmaStylesPage.flickable.width = plasmaStylesPage.width
-                            }
+                            delegate: Kirigami.Card {
+                                id: card
 
-                            Connections {
-                                target: formCardHeader
-                                onWidthChanged: {
-                                    formCardHeader.height = Layout.minimumHeight * (Math.ceil(PlasmaStyleBackend.stylesCount / grid.columns))
-                                    plasmaStylesPage.flickable.contentHeight = formCardGroup.height + Kirigami.Units.largeSpacing + 65
-                                    plasmaStylesPage.flickable.width = plasmaStylesPage.width
+                                Layout.minimumHeight: 110
+                                Layout.maximumHeight: 400
+
+                                property bool cardHovered: false
+                                property bool themeSel: selected
+
+
+                                background: Rectangle {
+                                    anchors.fill: parent
+                                    opacity: 0
                                 }
-                                onHeightChanged: {
-                                    formCardHeader.height = Layout.minimumHeight * (Math.ceil(PlasmaStyleBackend.stylesCount / grid.columns))
-                                    plasmaStylesPage.flickable.contentHeight = formCardGroup.height + Kirigami.Units.largeSpacing + 65
-                                    plasmaStylesPage.flickable.width = plasmaStylesPage.width
-                                }
-                            }
-
-                            // Card animations
-
-                            PropertyAnimation {
-                                id: opacityAnimation
-                                target: card
-                                properties: "opacity"
-                                from: 0.0
-                                to: 1
-                                duration: 800
-                            }
-
-                            // Plasma color banner (Plasma Color)
-
-                            Rectangle {
-                                id: banner
-                                //anchors.horizontalCenter: card.horizontalCenter
-                                width: card.height - 2
-                                height: card.height - 2
-                                x: 1
-                                y: 1
-                                color: plasmaColor
-                                opacity: 0
 
                                 Component.onCompleted: {
-                                    bannerOpacityAnimation.start()
+                                    opacityAnimation.start()
+
+                                    // Mutar para columnas adaptables
+                                    // grid.columns = 5
+
+                                    formCardGroup.height = Layout.minimumHeight * (Math.ceil(PlasmaStyleBackend.stylesCount / (grid.width / 100)))
+                                    plasmaStylesPage.flickable.contentHeight = formCardGroup.height + Kirigami.Units.largeSpacing
+                                    plasmaStylesPage.flickable.width = plasmaStylesPage.width
+
+                                    selectedLabel.text = plasmaStyleModel.get(PlasmaStyleBackend.selectedStyle).name
+                                    formTextSelected.height = 100
+                                    selectedBanner.color =  plasmaStyleModel.get(PlasmaStyleBackend.selectedStyle).plasmaColor
                                 }
+
+                                Connections {
+                                    target: formCardHeader
+                                    onWidthChanged: {
+                                        formCardHeader.height = Layout.minimumHeight * (Math.ceil(PlasmaStyleBackend.stylesCount / grid.columns))
+                                        plasmaStylesPage.flickable.contentHeight = formCardGroup.height + Kirigami.Units.largeSpacing * 3 + 65 + formSelected.height
+                                        plasmaStylesPage.flickable.width = plasmaStylesPage.width
+                                    }
+                                    onHeightChanged: {
+                                        formCardHeader.height = Layout.minimumHeight * (Math.ceil(PlasmaStyleBackend.stylesCount / grid.columns))
+                                        plasmaStylesPage.flickable.contentHeight = formCardGroup.height + Kirigami.Units.largeSpacing * 3 + 65 + formSelected.height
+                                        plasmaStylesPage.flickable.width = plasmaStylesPage.width
+                                    }
+                                }
+
+                                // Card animations
 
                                 PropertyAnimation {
-                                    id: bannerOpacityAnimation
-                                    target: banner
+                                    id: opacityAnimation
+                                    target: card
                                     properties: "opacity"
                                     from: 0.0
-                                    to: 0.8
-                                    duration: 2500
-                                    easing.type: Easing.InExpo
+                                    to: 1
+                                    duration: 800
                                 }
 
-                                layer.enabled: true
-                                layer.effect: OpacityMask {
-                                    maskSource: Item {
-                                        width: banner.width
-                                        height: banner.height
-                                        Rectangle {
-                                            anchors.centerIn: parent
-                                            width: banner.width
-                                            height: banner.height
-                                            radius: 4
+                                // Color
+
+                                Rectangle {
+                                    id: banner
+                                    anchors.left: nameRect.left
+                                    anchors.right: nameRect.right
+                                    anchors.top: card.top
+                                    anchors.bottom: card.bottom
+                                    anchors.topMargin: nameRect.anchors.margins
+                                    anchors.bottomMargin: nameRect.anchors.margins
+                                    radius: 4
+                                    border.width: 1
+                                    property color dColor: Kirigami.Theme.disabledTextColor
+                                    border.color: Qt.rgba(dColor.r,dColor.g,dColor.b,0.8)
+
+                                    color: plasmaColor
+
+                                    Component.onCompleted: {
+                                        bannerOpacityAnimation.start()
+                                    }
+
+                                    PropertyAnimation {
+                                        id: bannerOpacityAnimation
+                                        target: banner
+                                        properties: "opacity"
+                                        from: 0.0
+                                        to: 0.6
+                                        duration: 750
+                                        easing.type: Easing.InExpo
+                                    }
+                                }
+
+                                // Name
+
+                                Rectangle {
+
+                                    id: nameRect
+
+                                    anchors.left: card.left
+
+                                    anchors.bottom: card.bottom
+                                    anchors.margins: 7
+                                    width: 90
+                                    height: 30
+                                    opacity: 1.0
+                                    radius: 4
+                                    Kirigami.Theme.colorSet: Kirigami.Theme.Window
+                                    property color dColor: Kirigami.Theme.disabledTextColor
+                                    border.width: 1
+                                    border.color: Qt.rgba(dColor.r,dColor.g,dColor.b,0.8)
+
+                                    color: Kirigami.Theme.backgroundColor
+
+                                    Controls.Label {
+                                        id: nameLabel
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        anchors.verticalCenterOffset: -2
+                                        anchors.left:parent.left
+                                        anchors.right: parent.right
+                                        anchors.leftMargin: Kirigami.Units.smallSpacing
+                                        anchors.rightMargin: Kirigami.Units.smallSpacing
+
+                                        text: name
+                                        elide: Qt.ElideRight
+                                        wrapMode: Qt.WordWrap
+                                        color: Kirigami.Theme.textColor
+                                    }
+                                }
+
+                                // Selection icon (circle)
+
+                                Rectangle {
+                                    id: selectIconRect
+                                    implicitWidth: Kirigami.Units.iconSizes.medium
+                                    implicitHeight: Kirigami.Units.iconSizes.medium
+                                    anchors.centerIn: banner
+                                    anchors.verticalCenterOffset: 0 - nameRect.height / 2
+                                    scale: 1.2
+                                    radius: width
+                                    Kirigami.Theme.colorSet: Kirigami.Theme.View
+                                    Kirigami.Theme.inherit: false
+                                    color: Kirigami.Theme.disabledTextColor
+                                    opacity: 0.1
+                                    visible: themeSel ? true : false
+                                }
+
+                                // Selection icon (icon)
+
+                                Kirigami.Icon {
+                                    anchors.centerIn: selectIconRect
+                                    implicitWidth: Kirigami.Units.iconSizes.small
+                                    implicitHeight: Kirigami.Units.iconSizes.small
+                                    Kirigami.Theme.colorSet: Kirigami.Theme.View
+                                    Kirigami.Theme.inherit: false
+                                    color: Kirigami.Theme.textColor
+                                    opacity: 0.7
+                                    visible: themeSel ? true : false
+                                    source: "emblem-ok-symbolic"
+                                }
+
+                                // Mouse handling
+
+                                MouseArea {
+                                    id: mouse
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+
+                                    onClicked: {
+                                        var fcount = PlasmaStyleBackend.stylesCount
+                                        for (var i = 0 ; i < fcount ; i++) {
+                                            plasmaStyleModel.setProperty(i, "selected", false)
                                         }
+                                        plasmaStyleModel.setProperty(index, "selected", true)
+                                        PlasmaStyleBackend.setSelectedStyle(index)
+                                        selectedLabel.text = plasmaStyleModel.get(PlasmaStyleBackend.selectedStyle).name
+                                        selectedBanner.color = plasmaStyleModel.get(PlasmaStyleBackend.selectedStyle).plasmaColor
                                     }
-                                }
-                            }
 
-                            // Informative chip
-
-                            Kirigami.Chip {
-                                id: bannerChip
-                                anchors.left: banner.right
-                                anchors.top: card.top
-                                anchors.margins: 7
-                                width: 120
-                                height: 30
-                                opacity: 0.8
-                                closable: false
-
-                                text: name
-                                icon.name: "tag-symbolic"
-                            }
-
-                            PropertyAnimation {
-                                id: chipOpacityOnStartAnimation
-                                target: bannerChip
-                                properties: "opacity"
-                                from: 0.0
-                                to: bannerChip.opacity
-                                duration: 1000
-                                easing.type: Easing.OutExpo
-                            }
-
-                            PropertyAnimation {
-                                id: chipOpacityUpAnimation
-                                target: bannerChip
-                                properties: "opacity"
-                                from: 0.8
-                                to: 1.0
-                                duration: 1000
-                                easing.type: Easing.OutExpo
-                            }
-
-                            PropertyAnimation {
-                                id: chipOpacityDownAnimation
-                                target: bannerChip
-                                properties: "opacity"
-                                from: 1.0
-                                to: 0.8
-                                duration: 1000
-                                easing.type: Easing.OutExpo
-                            }
-
-                            // Selection icon rectangle (icon background)
-
-                            Rectangle {
-                                id: selectIconRect
-                                implicitWidth: Kirigami.Units.iconSizes.medium
-                                implicitHeight: Kirigami.Units.iconSizes.medium
-                                anchors.bottom: card.bottom
-                                anchors.right: card.right
-                                anchors.margins: 8
-                                scale: 1.2
-                                radius: width
-                                Kirigami.Theme.colorSet: Kirigami.Theme.View
-                                Kirigami.Theme.inherit: false
-                                color: Kirigami.Theme.disabledTextColor
-                                opacity: 0.1
-                                visible: styleSel ? true : false
-                            }
-
-                            // Selection icon
-
-                            Kirigami.Icon {
-                                anchors.centerIn: selectIconRect
-                                implicitWidth: Kirigami.Units.iconSizes.small
-                                implicitHeight: Kirigami.Units.iconSizes.small
-                                Kirigami.Theme.colorSet: Kirigami.Theme.View
-                                Kirigami.Theme.inherit: false
-                                color: Kirigami.Theme.textColor
-                                opacity: 0.7
-                                visible: styleSel ? true : false
-                                source: "emblem-ok-symbolic"
-                            }
-
-                            // Mouse handling
-
-                            MouseArea {
-                                id: mouse
-                                anchors.fill: parent
-                                //anchors.bottomMargin: 40
-                                hoverEnabled: true
-
-                                onClicked: {
-                                    var fcount = PlasmaStyleBackend.stylesCount
-                                    for (var i = 0 ; i < fcount ; i++) {
-                                        plasmaStyleModel.setProperty(i, "selected", false)
+                                    onEntered: {
+                                        //
                                     }
-                                    plasmaStyleModel.setProperty(index, "selected", true)
-                                    PlasmaStyleBackend.setSelectedStyle(index)
-                                }
-
-                                onEntered: {
-                                    chipOpacityUpAnimation.start()
-                                }
-                                onExited: {
-                                    chipOpacityDownAnimation.start()
+                                    onExited: {
+                                        //
+                                    }
                                 }
                             }
                         }
