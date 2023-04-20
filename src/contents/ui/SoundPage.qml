@@ -13,7 +13,7 @@ import org.kde.plasma.private.volume 0.1
 import org.kde.plasma.core 2.1 as PlasmaCore
 
 Kirigami.ScrollablePage {
-    id: networkPage
+    id: soundPage
 
     title: "Sound"
     verticalScrollBarPolicy: Controls.ScrollBar.AlwaysOn
@@ -22,6 +22,29 @@ Kirigami.ScrollablePage {
     rightPadding: 0
     topPadding: Kirigami.Units.gridUnit
     bottomPadding: Kirigami.Units.gridUnit
+
+    Component.onCompleted: {
+        opacityAnimation.start()
+        yAnimation.start()
+    }
+
+    PropertyAnimation {
+        id: opacityAnimation
+        target: soundPage
+        properties: "opacity"
+        from: 0.0
+        to: 1.0
+        duration: 600
+    }
+
+    PropertyAnimation {
+        id: yAnimation
+        target: soundPage
+        properties: "y"
+        from: -5
+        to: 0
+        duration: 300
+    }
 
     GlobalConfig {
         id: config
