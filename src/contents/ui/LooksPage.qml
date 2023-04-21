@@ -62,7 +62,7 @@ Kirigami.ScrollablePage {
 
         // Elements list
 
-        delegate: Kirigami.SwipeListItem {
+        delegate: Kirigami.BasicListItem {
             id: delegateItem
 
             height: 60 // 45
@@ -75,49 +75,50 @@ Kirigami.ScrollablePage {
                 color: hovered ? Kirigami.Theme.alternateBackgroundColor : Kirigami.Theme.backgroundColor
             }
 
-            RowLayout {
-                Layout.fillHeight: true
+            // Element icon
 
-                // Element icon
+            Kirigami.Icon {
+                id: iconList
+                anchors.left: parent.left
+                anchors.leftMargin: 0
+                implicitWidth: Kirigami.Units.iconSizes.smallMedium
+                implicitHeight: Kirigami.Units.iconSizes.smallMedium
+                source: iconItem
+            }
 
-                Kirigami.Icon {
-                    //Layout.fillHeight: true
-                    Layout.preferredWidth: Kirigami.Units.iconSizes.smallMedium
-                    Layout.preferredHeight: Kirigami.Units.iconSizes.smallMedium
-                    source: iconItem
-                }
+            // Element text
 
-                // Element text
+            Controls.Label {
+                //Layout.fillWidth: true
+                anchors.left: iconList.right
+                anchors.leftMargin: 12
+                text: name
+                elide: Qt.ElideRight
+            }
 
-                Controls.Label {
-                    Layout.fillWidth: true
-                    text: name
-                    elide: Qt.ElideRight
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: {
-                            switch (index) {
-                                case 0: {
-                                    pageStack.push("qrc:/ColorSchemesPage.qml")
-                                    return
-                                }
-                                case 1: {
-                                    pageStack.push("qrc:/PlasmaStylePage.qml")
-                                    return
-                                }
-                                case 2: {
-                                    pageStack.push("qrc:/WallpapersPage.qml")
-                                    return
-                                }
-                                case 3: {
-                                    pageStack.push("qrc:/IconsPage.qml")
-                                    return
-                                }
-                                case 4: {
-                                    pageStack.push("qrc:/CursorsPage.qml")
-                                    return
-                                }
-                            }
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    switch (index) {
+                        case 0: {
+                            pageStack.push("qrc:/ColorSchemesPage.qml")
+                            return
+                        }
+                        case 1: {
+                            pageStack.push("qrc:/PlasmaStylePage.qml")
+                            return
+                        }
+                        case 2: {
+                            pageStack.push("qrc:/WallpapersPage.qml")
+                            return
+                        }
+                        case 3: {
+                            pageStack.push("qrc:/IconsPage.qml")
+                            return
+                        }
+                        case 4: {
+                            pageStack.push("qrc:/CursorsPage.qml")
+                            return
                         }
                     }
                 }
