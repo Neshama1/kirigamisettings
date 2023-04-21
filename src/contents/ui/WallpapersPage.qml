@@ -160,10 +160,18 @@ Kirigami.ScrollablePage {
                                     }
                                 }
                             }
+
+                            Connections {
+                                target: selectedImage
+                                onStatusChanged: {
+                                    if (selectedImage.status == Image.Ready) {
+                                        bannerSelectedOpacityAnimation.start()
+                                    }
+                                }
+                            }
                         }
 
                         Component.onCompleted: {
-                            bannerSelectedOpacityAnimation.start()
                         }
 
                         PropertyAnimation {
@@ -346,10 +354,18 @@ Kirigami.ScrollablePage {
                                                 }
                                             }
                                         }
+
+                                        Connections {
+                                            target: wallpaperImage
+                                            onStatusChanged: {
+                                                if (wallpaperImage.status == Image.Ready) {
+                                                    bannerOpacityAnimation.start()
+                                                }
+                                            }
+                                        }
                                     }
 
                                     Component.onCompleted: {
-                                        bannerOpacityAnimation.start()
                                     }
 
                                     PropertyAnimation {
