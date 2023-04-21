@@ -62,7 +62,7 @@ Kirigami.ScrollablePage {
 
         // Elements list
 
-        delegate: Kirigami.BasicListItem {
+        delegate: Kirigami.SwipeListItem {
             id: delegateItem
 
             height: 60 // 45
