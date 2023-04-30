@@ -19,6 +19,7 @@
 #include <KConfigGroup>
 #include <QApplication>
 #include <QScreen>
+#include <KSharedConfig>
 
 /**
  * @todo write docs

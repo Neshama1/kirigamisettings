@@ -66,7 +66,7 @@ Kirigami.ApplicationWindow {
         isMenu: root.isMobile
 
         modal: !wideScreen || Kirigami.Settings.isMobile
-        width: 60
+        width: 38
         //margins: 0
         //padding: 20
 
@@ -87,7 +87,7 @@ Kirigami.ApplicationWindow {
                 text: i18n("Expand")
                 icon.name: "application-exit"
                 displayHint: Kirigami.DisplayHint.KeepVisible
-                onTriggered: globalDrawer.width = globalDrawer.width == 60 ? 170 : 60
+                onTriggered: globalDrawer.width = globalDrawer.width == 38 ? 170 : 38
             },/*
             Kirigami.Action {
                 text: i18n("About Kirigami Settings")
